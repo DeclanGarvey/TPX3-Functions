@@ -1,0 +1,12 @@
+
+add_library(FileConvertion FileConvertion.cc)
+
+target_include_directories(FileConvertion PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(FileConvertion PRIVATE "stdc++fs")
+
+target_link_libraries(FileConvertion PRIVATE ParticleCluster)
+target_link_libraries(FileConvertion PRIVATE FileNames)
+target_link_libraries(FileConvertion PRIVATE DirectoryReaders)
+target_link_libraries(FileConvertion PRIVATE ParticleFileReaders)
+target_link_libraries(FileConvertion PRIVATE ParticleFileWriters)
+
