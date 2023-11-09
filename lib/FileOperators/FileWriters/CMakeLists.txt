@@ -10,4 +10,5 @@ target_link_libraries(ParticleFileWriters PRIVATE ParticleCluster)
 target_link_libraries(ParticleFileWriters PRIVATE ClusterFunctions)
 target_link_libraries(ParticleFileWriters PRIVATE AngleProject)
 target_link_libraries(ParticleFileWriters PRIVATE MLAngleProject)
+target_link_libraries(ParticleFileWriters PRIVATE AnalyticClassification)
 

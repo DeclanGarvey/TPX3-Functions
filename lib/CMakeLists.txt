@@ -11,10 +11,4 @@ if(RooUnfold_FOUND)
 	add_subdirectory(Deconvolution)
 endif()
 
-#find_library(ONNX NAMES onnxruntime)
-#if(ONNX)
-#	add_subdirectory(MLParticleTracking)
-#else()
-#	message("onnxruntime not found MLTracking can't be built")
-#endif()
-
+add_subdirectory(AnalyticClassification)

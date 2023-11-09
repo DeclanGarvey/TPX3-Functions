@@ -17,3 +17,7 @@ double EnergySizeRatio(particle const& p, double EnergyCut);
 double Length(particle const& p);
 double NearestNeighbours8Fold(particle const& p);
 double NearestNeighbours4Fold(particle const& p);
+double NumberOfInnerPixels(particle const& p);
+double DiameterOfCluster(particle const& p);
+double PixelDistance(PixelHit const& p1, PixelHit const& p2);
+double MaximumDistance(particle const& p);
