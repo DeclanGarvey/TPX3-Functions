@@ -7,6 +7,7 @@ using namespace std;
 #include "Particle.h"
 #include "ClusterFeatures.h"
 #include "AngleCalulationFunctions.h"
+#include "MorphologicalClassification.h"
 #include "ParticleFileWriters.h"
 
 #include "MLFieldTrackingFileWriter.h"
@@ -20,9 +21,10 @@ bool MLFieldTrackingFileWriter::AddParticle(particle const& p)
 {
 	if(p.IsEmpty()==false)
 	{
+		int MorphClass = GetMorphologicalClass(p);
 		double theta = ThetaModel->PredictFromParticle(p);
 		double phi = PhiTimeWeighted(p);
-		fprintf(opFile_, "%lf %d %lf %f %lf %lf %lf\n", p.GetMinToA(),p.GetSize(), p.GetEnergy(), theta, phi, LLMLinearity(p), ThetaImprovedLLM(p, DetectorThickness_));
+		fprintf(opFile_, "%lf %d %d %f %lf %lf %lf\n", p.GetMinToA(), MorphClass, p.GetSize(), p.GetEnergy(), theta, phi, ThetaImprovedLLM(p, DetectorThickness_));
 		return true;
 	}
 	else 

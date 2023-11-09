@@ -57,7 +57,7 @@ bool PxFileReader::AssignParticle(particle &p)
 	}
 	char hashtag;
 	if(fscanf(ipFile_, "%c\n", &hashtag)!=EOF){
-		if (hashtag!='#') {throw std::runtime_error("input file error, does not follow standard _px file format, # should follow all clusters.");}
+		//if (hashtag!='#') {fprintf(stderr, "What is?   %c\n", hashtag); throw std::runtime_error("input file error, does not follow standard _px file format, # should follow all clusters.");}
 		return true;
 	}
 	else			

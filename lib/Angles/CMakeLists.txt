@@ -15,7 +15,6 @@ find_library(ONNX_NAME onnxruntime PATHS /usr/local/lib)
 find_path(ONNX_INCLUDE_DIR onnxruntime)
 if(ONNX_INCLUDE_DIR)
 	message("-- onnxruntime - found")
-	message(ONNX_NAME)
 	add_library(MLAngleProject RandomForrestTheta.cc)
 	
 	

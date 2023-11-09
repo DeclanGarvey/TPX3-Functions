@@ -68,7 +68,7 @@ double PixelsInLine(particle const&p, int XFuncOrYYFunc, PixelHit const& p1, Pix
 		for (auto i = p.begin(); i != p.end(); i++ ) 
 		{
 			double d = abs((i->x*A + i->y*B + C)/sqrt(A*A + B*B));
-			if(d<0.7071)
+			if(d<1.0)//0.7071?
 				n+=1;
 		}
 	}
@@ -81,7 +81,7 @@ double PixelsInLine(particle const&p, int XFuncOrYYFunc, PixelHit const& p1, Pix
 		for (auto i = p.begin(); i != p.end(); i++ ) 
 		{
 			double d = abs((i->y*A + i->x*B + C)/sqrt(A*A + B*B));
-			if(d<0.7071)
+			if(d<1.0) 
 				n+=1;
 		}
 	}
@@ -385,4 +385,33 @@ double NumberOfInnerPixels(particle const& p)
 	}
 	return InnerPixels;
 }
+
+double DiameterOfCluster(particle const& p)
+{ 
+	return 2.*sqrt( p.GetSize() / M_PI); 
+}
+
+double PixelDistance(PixelHit const& p1, PixelHit const& p2)
+{
+	return sqrt(pow(p1.x - p2.x, 2.0) + pow(p1.y - p2.y, 2.0)); // 0.00003025 = (55 micometers)^2
+}
+
+double MaximumDistance(particle const& p)
+{
+	double Distances[6];
+	Distances[0] = PixelDistance(p.GetRightBottomMost(), p.GetLeftTopMost());
+	Distances[1] = PixelDistance(p.GetRightBottomMost(), p.GetTopLeftMost());
+	Distances[2] = PixelDistance(p.GetRightBottomMost(), p.GetBottomRightMost());
+	Distances[3] = PixelDistance(p.GetBottomRightMost(), p.GetLeftTopMost());
+	Distances[4] = PixelDistance(p.GetTopLeftMost(), p.GetLeftTopMost());
+	Distances[5] = PixelDistance(p.GetTopLeftMost(), p.GetBottomRightMost());
+	double m=-1;
+	for( double dist : Distances)
+		if(m<dist)
+			m=dist;
+	
+	return m;
+}
+
+
 

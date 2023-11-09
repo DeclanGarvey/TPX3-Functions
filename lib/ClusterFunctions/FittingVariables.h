@@ -16,11 +16,6 @@ namespace SpectroscopeFitting
 	const int ElectronNoEnergyBins = 5;
 	const double ElectronProtonEnergyBinRatio = 2.5;
 	
-	/*const double ElectronMinEnergyBin = 0.0;
-	const double ElectronMaxEnergyBin = 50;
-	const int ElectronNoEnergyBins = 5;
-	const double ElectronProtonEnergyBinRatio = 5.0;*/
-	
 	const int NoStoppingPowerBins = 80;
 	const double MinStoppingPowerBin = 0.0;
 	const double MaxStoppingPowerBin = 40.0;

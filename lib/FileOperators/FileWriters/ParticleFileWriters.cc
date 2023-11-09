@@ -6,6 +6,7 @@ using namespace std;
 #include "Particle.h"
 #include "AngleCalulationFunctions.h"
 #include "ClusterFeatures.h"
+#include "MorphologicalClassification.h"
 #include "ParticleFileWriters.h"
 
 PxFileWriter::PxFileWriter(const string& opFileName, double DetectorThickness)
@@ -212,9 +213,10 @@ bool FieldTrackingFileWriter::AddParticle(particle const& p)
 {
 	if(p.IsEmpty()==false)
 	{
+		int MorphClass = GetMorphologicalClass(p);
 		double theta = ThetaImprovedLLM(p, DetectorThickness_);
 		double phi = PhiTimeWeighted(p);
-		fprintf(opFile_, "%lf %d %lf %lf %lf %lf %lf\n", p.GetMinToA(), p.GetSize(), p.GetEnergy(), theta, phi, Linearity(p), ThetaImprovedLLM(p, DetectorThickness_));
+		fprintf(opFile_, "%lf %d %d %lf %lf %lf %lf\n", p.GetMinToA(), MorphClass, p.GetSize(), p.GetEnergy(), theta, phi, ThetaImprovedLLM(p, DetectorThickness_));
 		return true;
 	}
 	else 
