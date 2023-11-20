@@ -6,4 +6,4 @@
 
 void ConstructResponse(const std::string&  ipDirectory, const std::string&  opDirectory,  const std::string& ConfigurationDirectory, double DetectorThickness);
 void ResponseConstructionFromDirectory(const std::string& ipDirectory, const std::string& opDirectory, const std::string& ConfigurationDirectory, double DetectorThickness);
-void PrintUnfoldingMatrix(const std::string& ResponseFileName);//, const std::string& opFileName);
+void PrintUnfoldingMatrix(const string& ResponseFileName, const string& ResponseMatrixImageSaveDirectory)

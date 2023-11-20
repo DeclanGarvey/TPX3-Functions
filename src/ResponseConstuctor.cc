@@ -23,13 +23,12 @@ usage (void)
 	fprintf (stderr, "-h/?          : Help page.\n");
 	fprintf (stderr, "-o <filename> : Output filename. If omitted, it will be output stdout.\n");
 	fprintf (stderr, "-d            : Flag indicates input is directory of files.\n");
-	fprintf (stderr, "-f <int>      : (recommended) Specify the input file type, default set according to file ending.\n");
-	fprintf (stderr, "                NOTE: SATRAM file type only used if specified(3).\n");
-	fprintf (stderr, "-t <int>      : Specify the ouput file type. default for, case file input: './results', case directory input: ipDirectory\n");
+	fprintf (stderr, "-c <filename> : Specify configuration parameters of constructed response matrix, default parameters from 'RooUnfoldResponseConstructorClass.h' used.\n");
 	fprintf (stderr, "-z <double>   : Specify Detector Thickness, default 0.05 cm\n");
-	fprintf (stderr, "-e            : Flag indicates to keep edge clusters in output, by default they are removed.\n");
+	fprintf (stderr, "-p <filename> : Specify directory at which to save image of response matrix, empty by default => response matrix image not saved.\n");
 	fprintf (stderr, "-s            : Show data file types.");
 	fprintf (stderr, "\n");
+	fprintf (stderr, "NOTE: Deconvolution algorithm only takes _sp.txt files as input type.\n\n");
 	fprintf (stderr, "Declare input file after all parameters are specified.\n\n");
 	exit (1);
 }
@@ -48,6 +47,7 @@ int main (int argc, const char *argv[])
 	double DetectorThickness = 0.05;
 	bool InputIsDirectory=false;
 	string ConfigurationFileName;
+	string ResponseMatrixImageSaveDirectory;
 	/* Collect the arguments from the command line */
 	while ((opt = getopt (argc, (char * const*)argv, "?ho:dt:f:ez:psc:")) != EOF)
 	{
@@ -74,7 +74,7 @@ int main (int argc, const char *argv[])
 				ShowDataFileTypes();
 				break;
 			case 'p':
-				print=true;
+				ResponseMatrixImageSaveDirectory.assign(optarg);
 				break;
 			default:
 				fprintf (stderr, "Unrecognised option [-%c]\n", opt);
@@ -99,8 +99,8 @@ int main (int argc, const char *argv[])
 				ResponseConstructionFromDirectory(ipFileName, opFileName, ConfigurationFileName, DetectorThickness);
 			else
 				ConstructResponse(ipFileName, opFileName,ConfigurationFileName, DetectorThickness);
-			if(print)
-				PrintUnfoldingMatrix(opFileName);	
+			if(ResponseMatrixImageSaveDirectory.empty()==false)
+				PrintUnfoldingMatrix(ResponseFileName, ResponseMatrixImageSaveDirectory);	
 		}
 		else
 		{

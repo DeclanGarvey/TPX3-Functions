@@ -22,14 +22,14 @@ usage (void)
 	fprintf (stderr, "\n\n");
 	fprintf (stderr, "-h/?          : Help page.\n");
 	fprintf (stderr, "-o <filename> : Output filename. If omitted, it will be output stdout.\n");
-	fprintf (stderr, "-d            : Flag indicates input is directory of files.\n");
-	fprintf (stderr, "-f <int>      : (recommended) Specify the input file type, default set according to file ending.\n");
-	fprintf (stderr, "                NOTE: SATRAM file type only used if specified(3).\n");
-	fprintf (stderr, "-t <int>      : Specify the ouput file type. default for, case file input: './results', case directory input: ipDirectory\n");
+	fprintf (stderr, "-d            : Flag indicates input is directory of file.\n");
+	fprintf (stderr, "-r <filename> : Specify directory of the response matrix used by algorithm, default './Response.root'\n");
+	fprintf (stderr, "-i <int>      : Indicate the measurement region chosen specified in _sp.txt files column 1, default -1 => take all measurment regions.\n");
 	fprintf (stderr, "-z <double>   : Specify Detector Thickness, default 0.05 cm\n");
-	fprintf (stderr, "-e            : Flag indicates to keep edge clusters in output, by default they are removed.\n");
+	fprintf (stderr, "-p <filename> : Specify directory at which to save image of response matrix, empty by default => response matrix image not saved.\n");
 	fprintf (stderr, "-s            : Show data file types.");
 	fprintf (stderr, "\n");
+	fprintf (stderr, "NOTE: Deconvolution algorithm only takes _sp.txt files as input type.\n\n");
 	fprintf (stderr, "Declare input file after all parameters are specified.\n\n");
 	exit (1);
 }
@@ -43,8 +43,8 @@ int main (int argc, const char *argv[])
 
 	string opFileName;            /* output file name */
     	string ipFileName; 		/* Input file name */
-	string ResponseFileName;
-	//int ipFileType = -1;
+	string ResponseFileName = "./Response.root";
+	string ResponseMatrixImageSaveDirectory;
 	double DetectorThickness = 0.05;
 	bool InputIsDirectory=false;
 	int RegionID=-1;
@@ -73,6 +73,9 @@ int main (int argc, const char *argv[])
 			case 'z':
 				DetectorThickness = atof(optarg);
 				break;
+			case 'p':
+				ResponseMatrixImageSaveDirectory.assign(optarg);
+				break;
 			case 's':
 				ShowDataFileTypes();
 				break;
@@ -95,26 +98,13 @@ int main (int argc, const char *argv[])
 		if ((optind +1) == argc)
 		{
 			ipFileName.assign(argv[optind]);
+			if(ResponseMatrixImageSaveDirectory.empty()==false)
+				PrintUnfoldingMatrix(ResponseFileName, ResponseMatrixImageSaveDirectory);
+				
 			if(InputIsDirectory)
 				DeconvolutionDirectory(ResponseFileName, ipFileName, opFileName,DetectorThickness,RegionID);
 			else
 				Deconvolution(ResponseFileName, ipFileName, opFileName,DetectorThickness,RegionID);
-			/*if(InputIsDirectory)
-			{
-				if (opFileName.empty())
-				{
-					opFileName = ipFileName;
-				}
-				ConvertDirectoryTo(ipFileName, opFileName, ipFileType, opFileType, DetectorThickness, RemoveEdges);
-			}
-			else
-			{
-				if (opFileName.empty())
-				{
-					opFileName.assign("./results");
-				}
-				ConvertTo(ipFileName, opFileName, ipFileType, opFileType, DetectorThickness, RemoveEdges);
-			}*/
 			
 			
 		}
