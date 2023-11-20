@@ -43,7 +43,6 @@ int main (int argc, const char *argv[])
 	string opFileName;            /* output file name */
     	string ipFileName; 		/* Input file name */
 	string ResponseFileName;
-	bool print=false;
 	double DetectorThickness = 0.05;
 	bool InputIsDirectory=false;
 	string ConfigurationFileName;

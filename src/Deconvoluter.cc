@@ -4,6 +4,7 @@
 #include <getopt.h>
 #include <iostream>
 
+#include "ResponseConstruction.h"
 #include "Deconvolution.h"
 #include "FileNames.h"
 using namespace std;
