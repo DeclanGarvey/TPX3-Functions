@@ -60,7 +60,7 @@ void ResponseConstructionFromDirectory(const string&  ipDirectory, const string&
 	f->Close();
 }
 
-void PrintUnfoldingMatrix(const string& ResponseFileName)//, const string& opFileName)
+void PrintUnfoldingMatrix(const string& ResponseFileName, const string& ResponseMatrixImageSaveDirectory)
 {
 	RooUnfoldResponse* response = new RooUnfoldResponse();
 	TFile* f = new TFile(ResponseFileName.c_str(), "READ");
@@ -70,19 +70,11 @@ void PrintUnfoldingMatrix(const string& ResponseFileName)//, const string& opFil
 	
 	auto Matrix = response->Hresponse();
 	
-	/*FILE* opFile = fopen(opFileName.c_str(), "w");
-	fprintf(opFile, "%d %lf %lf %d\n", Matrix->GetNbinsX(), Matrix->GetXaxis()->GetXmin(), Matrix->GetXaxis()->GetXmax(), Matrix->GetNbinsY());
-	for(int i=1;i<=Matrix->GetNbinsY();i++)
-	{
-		for(int j=1;j<=Matrix->GetNbinsX();j++)
-			fprintf(opFile, "%lf ", Matrix->GetBinContent(j,i));
-		fprintf(opFile, "\n");
-	}*/
 	TCanvas* c = new TCanvas("","");
 	Matrix->Draw("COLZ");
 	c->SetLogz(1);
 	c->Update();
-	c->SaveAs("Response.png");
+	c->SaveAs(ResponseMatrixImageSaveDirectory.c_str());
 }
 
 	

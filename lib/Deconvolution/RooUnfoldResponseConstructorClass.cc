@@ -134,7 +134,6 @@ void RooUnfoldResponseConstructorClass::Initialise()
 
 void RooUnfoldResponseConstructorClass::AddEntry(int ParticleType, double PrimaryEnergy, double StoppingPower,double weight)
 {
-	//cout<<ParticleType<<" "<<ParticleTypeToParamPosition[ParticleType]<<" "<<
 	if(ParticleTypeToParamPosition.find(ParticleType)!=ParticleTypeToParamPosition.end())
 	{    
 		int ParamPosition = ParticleTypeToParamPosition[ParticleType];
@@ -213,7 +212,6 @@ RooUnfoldResponse RooUnfoldResponseConstructorClass::GetRooUnfoldResponse()
 			test->SetBinContent(j + GroupStart,sum);
 		}
 		GroupStart += NoEnergyBins[group];
-		//break;
 	}
 	TCanvas* c = new TCanvas("","");
 	test->Draw("HIST");
@@ -227,19 +225,6 @@ RooUnfoldResponse RooUnfoldResponseConstructorClass::GetRooUnfoldResponse()
 	measured->Draw("HIST");
 	c->Update();
 	c->SaveAs("measured.png");
-	/*int NBinsX = ResponseMatrix->GetNbinsX();
-	int NBinsY = ResponseMatrix->GetNbinsY();
-	for(int j=0;j<=NBinsY;j++)
-	{
-		double sum=0;
-		for(int i=0;i<=NBinsX;i++)
-			sum+=ResponseMatrix->GetBinContent(i,j);
-		for(int i=0;i<=NBinsX;i++)
-		{
-			ResponseMatrix->SetBinContent(i,j, ResponseMatrix->GetBinContent(i,j)/sum);
-			ResponseMatrix->SetBinError(i,j, ResponseMatrix->GetBinError(i,j)/sum);
-		}
-	}*/
 	return RooUnfoldResponse( measured, truth, ResponseMatrix);
 }
 
