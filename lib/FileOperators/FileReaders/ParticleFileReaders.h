@@ -11,15 +11,18 @@ class TIter;
 class TSystemFile;
 class TH1D;
 
+
+#include "ParticleGeneratorBaseClass.h"
+
 class particle;
 
-class ParticleFileReader 
+class ParticleFileReader : public ParticleGeneratorBaseClass
 {
 	protected:
 		FILE* ipFile_;
 	public:
 		virtual ~ParticleFileReader() {}
-		virtual bool AssignParticle(particle& p){return false;};
+		//virtual bool AssignParticle(particle& p){return false;};
 		virtual void Close() {};
 };
 

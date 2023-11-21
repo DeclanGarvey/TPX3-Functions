@@ -20,16 +20,17 @@ static void
 usage (void)
 {
 	fprintf (stderr, "\n\n");
-	fprintf (stderr, "-h/?          : Help page.\n");
-	fprintf (stderr, "-o <filename> : Output filename. If omitted, it will be output stdout.\n");
-	fprintf (stderr, "-d            : Flag indicates input is directory of files.\n");
-	fprintf (stderr, "-f <int>      : (recommended) Specify the input file type, default set according to file ending.\n");
-	fprintf (stderr, "                NOTE: SATRAM file type only used if specified(3).\n");
-	fprintf (stderr, "-t <int>      : Specify the ouput file type. default for, case file input: './results', case directory input: ipDirectory\n");
-	fprintf (stderr, "-z <double>   : Specify Detector Thickness, default 0.05 cm\n");
-	fprintf (stderr, "-e            : Flag indicates to keep edge clusters in output, by default they are removed.\n");
-	fprintf (stderr, "-s            : Show data file types.\n");
-	fprintf (stderr, "-m <modelpath>: Defined path to the ML model and changes implementation of using methods ML.\n");
+	fprintf (stderr, "-h/?           : Help page.\n");
+	fprintf (stderr, "-o <filename>  : Output filename. If omitted, it will be output stdout.\n");
+	fprintf (stderr, "-d             : Flag indicates input is directory of files.\n");
+	fprintf (stderr, "-f <int>       : (recommended) Specify the input file type, default set according to file ending.\n");
+	fprintf (stderr, "                 NOTE: SATRAM file type only used if specified(3).\n");
+	fprintf (stderr, "-t <int>       : Specify the ouput file type. default for, case file input: './results', case directory input: ipDirectory\n");
+	fprintf (stderr, "-z <double>    : Specify Detector Thickness, default 0.05 cm\n");
+	fprintf (stderr, "-e             : Flag indicates to keep edge clusters in output, by default they are removed.\n");
+	fprintf (stderr, "-s             : Show data file types.\n");
+	fprintf (stderr, "-m <modelpath> : Defined path to the ML model and changes implementation of using methods ML.\n");
+	fprintf (stderr, "-c <configpath>: Specify the path of the config defining the parameters of particles that saved, default all are saved.\n");
 	fprintf (stderr, "\n");
 	fprintf (stderr, "Declare input file after all parameters are specified.\n\n");
 	exit (1);
@@ -51,8 +52,9 @@ int main (int argc, const char *argv[])
 	bool InputIsDirectory=false;
 	bool RemoveEdges = true;
 	string ModelPath;
+	string SelectionConfigFilePath;
 	/* Collect the arguments from the command line */
-	while ((opt = getopt (argc, (char * const*)argv, "?ho:do:t:f:ez:psm:")) != EOF)
+	while ((opt = getopt (argc, (char * const*)argv, "?ho:do:t:f:ez:psm:c:")) != EOF)
 	{
 		/* Process the arguments */
 		switch (opt)
@@ -87,6 +89,9 @@ int main (int argc, const char *argv[])
 				if(ModelPath.empty())
 					cout<<"No model path was provide so standard non-ML file writer is being implemented"<<endl;
 				break;
+			case 'c':
+				SelectionConfigFilePath.assign(optarg);
+				break;
 			default:
 				fprintf (stderr, "Unrecognised option [-%c]\n", opt);
 				usage();
@@ -110,7 +115,7 @@ int main (int argc, const char *argv[])
 				{
 					opFileName = ipFileName;
 				}
-				ConvertDirectoryTo(ipFileName, opFileName, ipFileType, opFileType, DetectorThickness, RemoveEdges, ModelPath);
+				ConvertDirectoryTo(ipFileName, opFileName, ipFileType, opFileType, DetectorThickness, RemoveEdges, ModelPath, SelectionConfigFilePath);
 			}
 			else
 			{
@@ -118,7 +123,7 @@ int main (int argc, const char *argv[])
 				{
 					opFileName.assign("./results");
 				}
-				ConvertTo(ipFileName, opFileName, ipFileType, opFileType, DetectorThickness, RemoveEdges, ModelPath);
+				ConvertTo(ipFileName, opFileName, ipFileType, opFileType, DetectorThickness, RemoveEdges, ModelPath, SelectionConfigFilePath);
 			}
 			
 		}

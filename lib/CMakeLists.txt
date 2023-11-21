@@ -4,7 +4,7 @@ add_subdirectory(ParticleCluster)
 add_subdirectory(ClusterFunctions)
 add_subdirectory(FileOperators)
 add_subdirectory(Angles)
-
+add_subdirectory(ParticleFiltering)
 
 find_package(RooUnfold)
 if(RooUnfold_FOUND)
