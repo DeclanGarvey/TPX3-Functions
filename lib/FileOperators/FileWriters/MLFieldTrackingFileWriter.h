@@ -4,7 +4,7 @@
 
 class particle;
 class RandomForrestTheta;
-class SpFileWriter;
+class FieldTrackingFileWriter;
 
 class MLFieldTrackingFileWriter : public FieldTrackingFileWriter
 {

@@ -54,7 +54,7 @@ int main (int argc, const char *argv[])
 	string ModelPath;
 	string SelectionConfigFilePath;
 	/* Collect the arguments from the command line */
-	while ((opt = getopt (argc, (char * const*)argv, "?ho:do:t:f:ez:psm:")) != EOF)
+	while ((opt = getopt (argc, (char * const*)argv, "?ho:do:t:f:ez:psm:c:")) != EOF)
 	{
 		/* Process the arguments */
 		switch (opt)
@@ -115,7 +115,7 @@ int main (int argc, const char *argv[])
 				{
 					opFileName = ipFileName;
 				}
-				ConvertDirectoryTo(ipFileName, opFileName, ipFileType, opFileType, DetectorThickness, RemoveEdges, ModelPath);
+				ConvertDirectoryTo(ipFileName, opFileName, ipFileType, opFileType, DetectorThickness, RemoveEdges, ModelPath, SelectionConfigFilePath);
 			}
 			else
 			{
@@ -123,7 +123,7 @@ int main (int argc, const char *argv[])
 				{
 					opFileName.assign("./results");
 				}
-				ConvertTo(ipFileName, opFileName, ipFileType, opFileType, DetectorThickness, RemoveEdges, ModelPath);
+				ConvertTo(ipFileName, opFileName, ipFileType, opFileType, DetectorThickness, RemoveEdges, ModelPath, SelectionConfigFilePath);
 			}
 			
 		}

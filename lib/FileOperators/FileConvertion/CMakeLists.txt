@@ -9,4 +9,5 @@ target_link_libraries(FileConvertion PRIVATE FileNames)
 target_link_libraries(FileConvertion PRIVATE DirectoryReaders)
 target_link_libraries(FileConvertion PRIVATE ParticleFileReaders)
 target_link_libraries(FileConvertion PRIVATE ParticleFileWriters)
+target_link_libraries(FileConvertion PRIVATE ParticleFiltering)
 

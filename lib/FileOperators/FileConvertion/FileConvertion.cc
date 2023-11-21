@@ -7,6 +7,7 @@ using namespace std;
 #include "Particle.h"
 #include "DirectoryReaders.h"
 #include "ParticleFileReaders.h"
+#include "ParticleFileReaderFilter.h"
 
 #include "FileWriterFetcher.h"
 #include "ParticleFileWriters.h"
@@ -15,12 +16,16 @@ using namespace std;
 
 #include "FileConvertion.h"
 
-void ConvertTo(const string& ipFileName, const string& opFileName, int ipFileType, int opFileType, double DetectorThickness, bool RemoveEdges, const string& ModelPath)
+void ConvertTo(const string& ipFileName, const string& opFileName, int ipFileType, int opFileType, double DetectorThickness, bool RemoveEdges,
+		 const string& ModelPath, const string& SelectionConfigFilePath)
 {
-	particle p;
 	ParticleFileReader* reader = GetFileReader(ipFileName, ipFileType);
+	ParticleFileFilter* filteredreader = new ParticleFileFilter(reader, SelectionConfigFilePath);
+	
 	ParticleFileWriter* writer = GetFileWriter(opFileName, opFileType, DetectorThickness, ModelPath);
-	while(reader->AssignParticle(p))
+	
+	particle p;
+	while(filteredreader->AssignParticle(p))
 	{
 		if((p.IsEdge()==false) | (RemoveEdges==false))
 			writer->AddParticle(p);
@@ -30,7 +35,8 @@ void ConvertTo(const string& ipFileName, const string& opFileName, int ipFileTyp
 	writer->Close();
 }
 
-void ConvertDirectoryTo(const string& ipDirectoryName, const string& opDirectoryName, int ipFileType, int opFileType, double DetectorThickness, bool RemoveEdges, const string& ModelPath)
+void ConvertDirectoryTo(const string& ipDirectoryName, const string& opDirectoryName, int ipFileType, int opFileType, double DetectorThickness, bool RemoveEdges,
+		 	const string& ModelPath, const string& SelectionConfigFilePath)
 {
 	cout<<ipDirectoryName<<endl<<endl;
 	DirectoryReader* dir = new DirectoryReader(ipDirectoryName);
@@ -48,7 +54,8 @@ void ConvertDirectoryTo(const string& ipDirectoryName, const string& opDirectory
 			else
 			{
 				cout<<"Processing: "<<ipFileName<<endl;
-				ConvertTo(ipDirectoryName +"/"+ ipFileName, opDirectoryName+"/"+RemoveExtension(ipFileName), ipFileType, opFileType, DetectorThickness, RemoveEdges, ModelPath);
+				ConvertTo(ipDirectoryName +"/"+ ipFileName, opDirectoryName+"/"+RemoveExtension(ipFileName), ipFileType, opFileType, DetectorThickness, RemoveEdges, 	
+					ModelPath,SelectionConfigFilePath);
 			}
 		}
 	}

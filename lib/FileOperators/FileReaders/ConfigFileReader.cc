@@ -6,9 +6,7 @@ using namespace std;
 ConfigFileReader::ConfigFileReader(string const& ipFileName)
 {
 	ipFile.open(ipFileName);
-	if(ipFile.good())
-		ProcessNextVariable();
-	else
+	if(ipFile.good()==false)
 		cerr<<"Read Error: Config file could not be opened."<<endl;
 }
 
@@ -19,8 +17,8 @@ bool ConfigFileReader::ProcessNextVariable()
 		size_t DelimiterPos = CurrentLine.find("=");
 		if(DelimiterPos!=string::npos)
 		{
-			string VariableName = CurrentLine.substr(0, DelimiterPos);
-			string VariableValue = CurrentLine.substr(DelimiterPos + 1);
+			VariableName = CurrentLine.substr(0, DelimiterPos);
+			VariableValue = CurrentLine.substr(DelimiterPos + 1);
 		}
 		else 
 			cout<<"Line = \'"<<CurrentLine<<"\' does not containt \'=\' and is being ommited."<<endl;
