@@ -104,7 +104,7 @@ bool SpFileWriter::AddParticle(particle const& p)
 	if(p.IsEmpty()==false)
 	{
 		double theta = ThetaImprovedLLM(p, DetectorThickness_);
-		double phi = PhiLineFit(p);
+		double phi =  PhiTimeWeighted(p);
 		double sp = StoppingPower(p.GetEnergy(), theta, DetectorThickness_); 
 		double AcquisitionTime_ = p.AcquisitionTime;
 		fprintf(opFile_, "%d %d %lf %lf %lf %d %lf %lf %lf %lf %lf\n", p.GetRegionID(), p.ParticleType, p.PrimaryEnergy, p.GetMinToA(), AcquisitionTime_,

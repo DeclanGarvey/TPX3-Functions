@@ -20,7 +20,6 @@ void ParticleFileFilter::GenerateFiltersFromConfig(const std::string& ConfigFile
 		ConfigFileReader* configreader = new ConfigFileReader(ConfigFileFilters);
 		while(configreader->ProcessNextVariable())
 		{
-			cout<<configreader->GetCurrentVariableName()<<" "<<configreader->GetCurrentVariableValue()<<endl;
 			ParticleFilters_.push_back(GetFilter(configreader->GetCurrentVariableName(), configreader->GetCurrentVariableValue()));
 		}
 	}

@@ -15,7 +15,7 @@ class ParticleFileFilter : public ParticleGeneratorBaseClass
 {
 	private:
 		ParticleFileReader* reader;
-		std::vector<std::function<bool(const particle& p)>> ParticleFilters_;
+		std::vector<std::function<bool(particle& p)>> ParticleFilters_;
 	public:
 		ParticleFileFilter(ParticleFileReader* reader, const std::string& ConfigFileFilters);
 		void GenerateFiltersFromConfig(const std::string& ConfigFileFilters);
