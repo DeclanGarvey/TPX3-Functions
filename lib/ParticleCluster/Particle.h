@@ -21,6 +21,7 @@ class particle
 	public:
 		int ParticleType=-1;
 		double PrimaryEnergy=-1;
+		int MorphologicalClass=-1;
 		double phi=-1;
 		double theta=-1;
 		double AcquisitionTime=0.0;
@@ -54,6 +55,8 @@ class particle
 		bool IsEmpty() const;
 		PixelHit GetRandomPoint();
 		void Translate(const PixelHit& Translation);
-		//void Print(FILE* opf);
 		int GetRegionID() const;
+		void UpdateMorphologicalClass(int NewMorphologicalClass);
+		void UpdatePhi(double NewPhi);
+		void UpdateTheta(double NewTheta);
 };

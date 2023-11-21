@@ -50,7 +50,13 @@ void ConvertDirectoryTo(const string& ipDirectoryName, const string& opDirectory
 		{
 			if( (opFileType == GetFileType(ipFileName)) &
 				experimental::filesystem::equivalent(ipDirectoryName, opDirectoryName))
-				cout<<"Not processing "<<ipDirectoryName+"/"+ipFileName<<" as to avoid overwriting itself."<<endl;
+				{
+					cout<<"Processing: "<<ipFileName <<endl;
+					string NewipFileName = RemoveExtension(ipFileName)+"_new";
+					cout<<" =>Altering output file name to \'"+NewipFileName+"\' as to avoid overwriting itself."<<endl;
+					ConvertTo(ipDirectoryName +"/"+ ipFileName, opDirectoryName+"/"+RemoveExtension(NewipFileName), ipFileType, opFileType, DetectorThickness, RemoveEdges, 	
+						ModelPath,SelectionConfigFilePath);
+				}
 			else
 			{
 				cout<<"Processing: "<<ipFileName<<endl;

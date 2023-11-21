@@ -78,6 +78,7 @@ void particle::Clear()
 		bottomrightmost_ = {-1,300, -1,-1};
 		ParticleType=-1;
 		PrimaryEnergy=-1;
+		MorphologicalClass=-1;
 		phi=-1;
 		theta=-1;
 		AcquisitionTime=0;
@@ -166,12 +167,19 @@ void particle::Translate(const PixelHit& Translation)
 	for(auto& i : cluster_) 
 		i -= Translation;
 }
-/*void particle::Print(FILE* opf)
+
+void particle::UpdateMorphologicalClass(int NewMorphologicalClass)
 {
-	for (auto i=begin(); i != end(); i++ ) 
-	{
-		fprintf(opf, "%lf %lf %lf %lf\n", i->x, i->y,i->time, i->energy);
-	}
-}*/
+	MorphologicalClass = NewMorphologicalClass;
+}
+void particle::UpdatePhi(double NewPhi)
+{
+	phi=NewPhi;
+}
+void particle::UpdateTheta(double NewTheta)
+{
+	theta=NewTheta;
+}
+
 
 
