@@ -4,6 +4,7 @@ target_include_directories(Deconvolution PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(Deconvolution PRIVATE DirectoryReaders)
 target_link_libraries(Deconvolution PRIVATE ParticleFileReaders)
+target_link_libraries(Deconvolution PRIVATE ConfigFileReader)
 
 #find_package(ROOT)
 find_package( ROOT)
