@@ -1,4 +1,6 @@
 #include <fstream>
+#include <vector>
+#include <string>
 using namespace std;
 
 #include "ConfigFileReader.h"
@@ -12,31 +14,60 @@ ConfigFileReader::ConfigFileReader(string const& ipFileName)
 
 bool ConfigFileReader::ProcessNextVariable()
 {
-	if(getline(ipFile, CurrentLine))
+	string CommentRemovedLine; 
+	while(CommentRemovedLine.empty())
 	{
-		size_t DelimiterPos = CurrentLine.find("=");
-		if(DelimiterPos!=string::npos)
+		if(getline(ipFile, CurrentLine))
 		{
-			VariableName = CurrentLine.substr(0, DelimiterPos);
-			VariableValue = CurrentLine.substr(DelimiterPos + 1);
+			size_t DelimiterPos = CurrentLine.find("#");
+			CommentRemovedLine = CurrentLine.substr(0, DelimiterPos);
+			
+			if(CommentRemovedLine.find_first_not_of(" ") != std::string::npos)
+			{
+				DelimiterPos = CommentRemovedLine.find("=");
+				if(DelimiterPos!=string::npos)
+				{
+					VariableName = CommentRemovedLine.substr(0, DelimiterPos);
+					VariableValue = CommentRemovedLine.substr(DelimiterPos + 1);
+					VariableValueVector.clear();
+				}
+				else 
+					cout<<"Line = \'"<<CurrentLine<<"\' does not containt \'=\' and is being ommited."<<endl;
+			}
 		}
-		else 
-			cout<<"Line = \'"<<CurrentLine<<"\' does not containt \'=\' and is being ommited."<<endl;
-		return true;
+		else
+			return false;
 	}
-	else
-		return false;
+	return true;
 }
 
-string ConfigFileReader::GetCurrentVariableName()
+const string& ConfigFileReader::GetCurrentVariableName()
 {
 	return VariableName;
 }
 
 
-string ConfigFileReader::GetCurrentVariableValue()
+const string& ConfigFileReader::GetCurrentVariableValue()
 {
 	return VariableValue;
 }
 
+const std::vector<string>& ConfigFileReader::GetCurrentVariableAsVector()
+{
+	if(VariableValueVector.empty())
+	{
+		string buffer{""};
+		for(auto n : VariableValue)
+		{
+			if((n==',') & (n!=' ')) 
+				buffer+=n;
+			else if (((n == ',') | (n==' ')) & (buffer != "")) 
+			{
+				VariableValueVector.push_back(buffer); 
+				buffer = ""; 
+			}
+		}
+	}
+	return VariableValueVector;
+}
 

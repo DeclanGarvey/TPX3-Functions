@@ -12,6 +12,7 @@ using namespace::std;
 #include "RooUnfoldBayes.h"
 
 #include "FileNames.h"
+#include "ConfigFileReader.h"
 #include "FluenceStoppingPower.h"
 #include "ParticleFileReaders.h"
 #include "RooUnfoldResponseConstructorClass.h"
@@ -19,95 +20,57 @@ using namespace::std;
 
 void RooUnfoldResponseConstructorClass::SetResponseConstrutionParameters(const string& FileName)
 {
-	if(!FileName.empty())
+	ConfigFileReader* configreader = new ConfigFileReader(FileName);
+	while(configreader->ProcessNextVariable())
 	{
-		std::ifstream ipFile (FileName);
-		if (ipFile.is_open())
+		if(configreader->GetCurrentVariableName()=="NoStopingPowerBins")
 		{
-			std::string line;
-			while(getline(ipFile, line))
+			NoStoppingPowerBins = stoi(configreader->GetCurrentVariableValue());
+		}
+		else if(configreader->GetCurrentVariableName()=="MinStoppingPower")
+		{
+			MinStoppingPower = stod(configreader->GetCurrentVariableValue());
+		}
+		else if(configreader->GetCurrentVariableName()=="MaxStoppingPower")
+		{
+			MaxStoppingPower = stod(configreader->GetCurrentVariableValue());
+		}
+		else if(configreader->GetCurrentVariableName()=="ParticleTypes")
+		{
+			ParticleTypes.clear();
+			for(string Value : configreader->GetCurrentVariableAsVector())
 			{
-				if( line.empty() || line[0] == '#' )
-				{
-					continue;
-				}
-				auto delimiterPos = line.find("=");
-				auto name = line.substr(0, delimiterPos);
-				auto value = line.substr(delimiterPos + 1);
-				
-				double number;
-				stringstream ss;
-				if(strcmp(name.c_str(),"NoStopingPowerBins")==0)
-				{
-					NoStoppingPowerBins = stoi(value);
-				}
-				else if(strcmp(name.c_str(),"MinStoppingPower")==0)
-				{
-					MinStoppingPower = stod(value);
-				}
-				else if(strcmp(name.c_str(),"MaxStoppingPower")==0)
-				{
-					MaxStoppingPower = stod(value);
-				}
-				else if(strcmp(name.c_str(),"ParticleTypes")==0)
-				{
-					ParticleTypes.clear();
-					ss<<value;
-					while (!ss.eof()) 
-					{
-					   if (ss >> number){
-						ParticleTypes.push_back(number); 
-					   }
-
-					}
-				}
-				else if(strcmp(name.c_str(),"NoEnergyBins")==0)
-				{
-					NoEnergyBins.clear();
-					TotalNoEnergyBins=0;
-					ss<<value;
-					while (!ss.eof()) 
-					{
-					   if (ss >> number){
-						NoEnergyBins.push_back(number); 
-						TotalNoEnergyBins+=number;
-					   }
-
-					}
-				}
-				else if(strcmp(name.c_str(),"MinEnergyBin")==0)
-				{
-					MinEnergy.clear();
-					ss<<name;
-					while (!ss.eof()) 
-					{
-					    if (ss >> number){
-						MinEnergy.push_back(number); 
-					    }
-
-					}
-				}
-				else if(strcmp(name.c_str(),"MaxEnergyBin")==0)
-				{
-					MaxEnergy.clear();
-					ss<<name;
-					while (!ss.eof()) 
-					{
-					    ss >> number;
-					    if (ss >> number){
-						MaxEnergy.push_back(number); 
-					    }
-
-					}
-				}
-				else
-					cout<<"Unrecongised configuration parameter: "<<name<<endl;
+				ParticleTypes.push_back(stoi(Value)); 
 			}
 		}
-		else 
+		else if(configreader->GetCurrentVariableName()=="NoEnergyBins")
 		{
-			std::cerr << "Couldn't open config file for reading.\n";
+			NoEnergyBins.clear();
+			TotalNoEnergyBins=0;
+			for(string Value : configreader->GetCurrentVariableAsVector())
+			{
+				NoEnergyBins.push_back(stoi(Value)); 
+				TotalNoEnergyBins+=NoEnergyBins[-1];
+			}
 		}
+		else if(configreader->GetCurrentVariableName()=="MinEnergyBin")
+		{
+			MinEnergy.clear();
+			for(string Value : configreader->GetCurrentVariableAsVector())
+			{
+				MinEnergy.push_back(stod(Value)); 
+			}
+		}
+		else if(configreader->GetCurrentVariableName()=="MaxEnergyBin")
+		{
+			MaxEnergy.clear();
+			for(string Value : configreader->GetCurrentVariableAsVector())
+			{
+				MaxEnergy.push_back(stod(Value)); 
+			}
+		}
+		else
+			cout<<"Unrecongised configuration parameter: "<<configreader->GetCurrentVariableName()<<endl;
 	}
 	EnergyBinWidth.clear();
 	StoppingPowerBinWidth = (MaxStoppingPower-MinStoppingPower)/NoStoppingPowerBins;
