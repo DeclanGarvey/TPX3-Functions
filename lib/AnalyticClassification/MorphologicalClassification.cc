@@ -1,4 +1,6 @@
 #include <math.h>
+#include <iostream>
+
 using namespace std;
 
 #include "Particle.h"
@@ -19,10 +21,13 @@ int GetMorphologicalClass(particle const& p)
 			{
 				if( (inner<HeavyTracks::MinimumInnerCount) | (InnerToOuter<HeavyTracks::MinimumInnerToOuterRatio) | (maxdist < (HeavyTracks::MinimumRadiusDeviation*diameter)) )
 				{
-					double lin = LLMLinearity(p);
-					if( (lin<StraightTracks::MinimumLinearity) | (lin*p.GetSize()<StraightTracks::MinimumInLinePixels) )//Originally was 20 in line pixels
+					double lin = Linearity(p);
+					if( (lin<StraightTracks::MinimumLinearity) | (lin*p.GetSize()<StraightTracks::MinimumInLinePixels) )
 					{
-						return 5; //Curly Tracks
+						if(p.GetSize()>CurlyTracks::MaximumSize)
+							return 3; //Accounting for misclassification of volcano affect
+						else
+							return 5; //Curly Tracks
 					}
 					else
 						return 4; //Straight Tracks
