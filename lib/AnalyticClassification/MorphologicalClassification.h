@@ -27,9 +27,10 @@ namespace HeavyTracks
 namespace StraightTracks
 {
 	const double MinimumLinearity = 0.9;
-	const int MinimumInLinePixels = 5;
+	const int MinimumInLinePixels = 4;//Originally was 20 in line pixels
 }
 namespace CurlyTracks
 {
-
+ 	const int MaximumSize=250;
+ 	const int MaximumNodes=10;
 }

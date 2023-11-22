@@ -57,36 +57,19 @@ vector<double> LineFit(particle const& p)
 
 double PixelsInLine(particle const&p, int XFuncOrYYFunc, PixelHit const& p1, PixelHit const& p2)
 {
-	double m;
-	double n=0;	
-	if(XFuncOrYYFunc==0)
+	double n=0;
+	double m_dx = (p2.x - p1.x);
+	double m_dy = (p2.y - p1.y);
+	for (auto i = p.begin(); i != p.end(); i++ ) 
 	{
-		m = (p2.y - p1.y)/(p2.x - p1.x);
-		double A = -m;
-		double B = 1;
-		double C = m*p1.x-p1.y;
-		for (auto i = p.begin(); i != p.end(); i++ ) 
-		{
-			double d = abs((i->x*A + i->y*B + C)/sqrt(A*A + B*B));
-			if(d<1.0)//0.7071?
-				n+=1;
-		}
-	}
-	else
-	{
-		m = (p2.x - p1.x)/(p2.y - p1.y);
-		double A = -m;
-		double B = 1;
-		double C = m*p1.y-p1.x;
-		for (auto i = p.begin(); i != p.end(); i++ ) 
-		{
-			double d = abs((i->y*A + i->x*B + C)/sqrt(A*A + B*B));
-			if(d<1.0) 
-				n+=1;
-		}
+		//double dist = abs( m_dx * ( p1.y - i->y) - m_dy * ( p1.x - i->x) );
+		double dist = abs( m_dx * (i->y - p1.y) - m_dy * (i->x - p1.x));
+		if(dist<=1.0)//0.7071?
+			n+=1;
 	}
 	return n;
 }
+
 
 double Linearity(particle const& p)
 {
@@ -380,7 +363,7 @@ double NumberOfInnerPixels(particle const& p)
 			if(( (i->x-1) == j->x) & ((i->y) == j->y))
 				n++;
 		}
-		if(n==0)
+		if(n==4)
 			InnerPixels++;
 	}
 	return InnerPixels;
@@ -412,6 +395,3 @@ double MaximumDistance(particle const& p)
 	
 	return m;
 }
-
-
-

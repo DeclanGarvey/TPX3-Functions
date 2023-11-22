@@ -16,7 +16,7 @@ PxFileWriter::PxFileWriter(const string& opFileName, double DetectorThickness)
 	fprintf(opInitFile_, "PxFile=%s\n", (RemoveDirectoryPath(opFileName) + "_px.txt").c_str());
 	fprintf(opInitFile_, "ClFile=%s\n", (RemoveDirectoryPath(opFileName) + "_cl.txt").c_str());
 	fprintf(opInitFile_, "Version=0\nFormat=txt\n");
-	
+	fclose(opInitFile_);
 	opClFile_ = fopen((opFileName+"_cl.txt").c_str(),"w");
 	opPxFile_ = fopen((opFileName+"_px.txt").c_str(),"w");
 	PxLineNo_=0; 
@@ -52,7 +52,6 @@ void PxFileWriter::AddInitInfo(const string&  ipInfo)
 
 void PxFileWriter::Close()
 {
-	fclose(opInitFile_);
 	fclose(opClFile_);
 	fclose(opPxFile_);
 }
