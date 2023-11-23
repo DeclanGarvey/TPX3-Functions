@@ -230,7 +230,7 @@ function<bool(particle&)> CreateMinimumStoppingPowerFilter(string MinimumStoppin
 			
 			p.StoppingPower = StoppingPower(p.GetEnergy(), p.theta, DetectorThickness);
 		}
-		return p.StoppingPower<MinimumStoppingPower;
+		return p.StoppingPower>MinimumStoppingPower;
 	};
 }
 
