@@ -62,9 +62,8 @@ double PixelsInLine(particle const&p, int XFuncOrYYFunc, PixelHit const& p1, Pix
 	double m_dy = (p2.y - p1.y);
 	for (auto i = p.begin(); i != p.end(); i++ ) 
 	{
-		//double dist = abs( m_dx * ( p1.y - i->y) - m_dy * ( p1.x - i->x) );
 		double dist = abs( m_dx * (i->y - p1.y) - m_dy * (i->x - p1.x));
-		if(dist<=1.0)//0.7071?
+		if(dist<=1.0)//?
 			n+=1;
 	}
 	return n;
@@ -76,17 +75,20 @@ double Linearity(particle const& p)
 	if(p.GetSize()>2)
 	{
 		double linearity=0;
+		
+		// implementing d = |Ay + Bx + C|/sqrt(A*A+B*B)
 		auto mc = LineFit(p);
+		double denom = sqrt(1+mc[1]*mc[1]);
 		for (auto i = p.begin(); i != p.end(); i++ ) 
 		{
 			if(mc[0]==0)
 			{
-				if(abs(i->y - (i->x*mc[1] + mc[2]))<=1.0)
+				if(abs(i->y - (i->x*mc[1] + mc[2]))<=0.7071*denom)
 					linearity+=1;
 			}
 			else
 			{
-				if(abs(i->x - (i->y*mc[1] + mc[2]))<=1.0)
+				if(abs(i->x - (i->y*mc[1] + mc[2]))<=0.7071*denom)
 					linearity+=1;
 			}
 		}

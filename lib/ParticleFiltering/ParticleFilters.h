@@ -19,4 +19,6 @@ std::function<bool(particle&)> CreateMinimumPhiFilter(std::string MinimumPhiInfo
 std::function<bool(particle&)> CreateMaximumPhiFilter(std::string MaximumPhiInfo);
 std::function<bool(particle&)> CreateMorphologicalClassFilter(int MorphologicalClass);
 std::function<bool(particle&)> CreateRegionIDFilter(int RegionID);
+std::function<bool(particle&)> CreateMinimumStoppingPowerFilter(std::string MinimumStoppingPowerInfo);
+std::function<bool(particle&)> CreateMaximumStoppingPowerFilter(std::string MaximumStoppingPowerInfo);
 

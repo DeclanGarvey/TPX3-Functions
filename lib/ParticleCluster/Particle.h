@@ -24,6 +24,7 @@ class particle
 		int MorphologicalClass=-1;
 		double phi=-1;
 		double theta=-1;
+		double StoppingPower=-1;
 		double AcquisitionTime=0.0;
 		int RegionID=0.0;
 		double SatPosX=0;

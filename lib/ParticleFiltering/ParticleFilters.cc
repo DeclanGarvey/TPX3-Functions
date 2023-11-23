@@ -6,6 +6,7 @@ using namespace std;
 #include "Particle.h"
 #include "AngleCalulationFunctions.h"
 #include "MorphologicalClassification.h"
+#include "FluenceStoppingPower.h"
 
 #include "ParticleFilters.h"
 
@@ -37,6 +38,10 @@ function<bool(particle& p)> GetFilter(const string& FilterName, const string& Fi
 		return CreateMorphologicalClassFilter(stoi(FilterValue));
 	else if(FilterName=="RegionID")
 		return CreateRegionIDFilter(stoi(FilterValue));
+	else if(FilterName=="MinimumStoppingPower")
+		return CreateMinimumStoppingPowerFilter(FilterValue);
+	else if(FilterName=="MaximumStoppingPower")
+		return CreateMaximumStoppingPowerFilter(FilterValue);
 	else 
 	{
 		cout<<"Warning: Unknown filter type found \'"<<FilterName<<"\' is being ommited along with value \'"<<FilterValue<<"\'."<<endl;
@@ -204,15 +209,54 @@ function<bool(particle&)> CreateRegionIDFilter(int RegionID)
 	};
 }
 
-/*function<bool(const particle&)> CreateRegionIDFilter(int RegionID)
+function<bool(particle&)> CreateMinimumStoppingPowerFilter(string MinimumStoppingPowerInfo)
 {
-	return [RegionID](particle& p)
+	size_t DelimiterPos = MinimumStoppingPowerInfo.find("@");
+	double MinimumStoppingPower;
+	double DetectorThickness=0.05;
+	if(DelimiterPos!=string::npos)
 	{
-		if((p.RegionID==-1) | (RegionID==-1))
-			return true;
-		else
-			return p.RegionID==RegionID;
+		MinimumStoppingPower = stod(MinimumStoppingPowerInfo.substr(0, DelimiterPos));
+		DetectorThickness = stod(MinimumStoppingPowerInfo.substr(DelimiterPos + 1));
+	}
+	else 
+		MinimumStoppingPower = stod(MinimumStoppingPowerInfo);
+	return [MinimumStoppingPower,DetectorThickness] (particle& p)
+	{
+		if(p.StoppingPower==-1)
+		{
+			if(p.theta==-1)
+				p.theta = ThetaImprovedLLM(p, DetectorThickness);
+			
+			p.StoppingPower = StoppingPower(p.GetEnergy(), p.theta, DetectorThickness);
+		}
+		return p.StoppingPower<MinimumStoppingPower;
 	};
-}*/
+}
+
+function<bool(particle&)> CreateMaximumStoppingPowerFilter(string MaximumStoppingPowerInfo)
+{
+	size_t DelimiterPos = MaximumStoppingPowerInfo.find("@");
+	double MaximumStoppingPower;
+	double DetectorThickness=0.05;
+	if(DelimiterPos!=string::npos)
+	{
+		MaximumStoppingPower = stod(MaximumStoppingPowerInfo.substr(0, DelimiterPos));
+		DetectorThickness = stod(MaximumStoppingPowerInfo.substr(DelimiterPos + 1));
+	}
+	else 
+		MaximumStoppingPower = stod(MaximumStoppingPowerInfo);
+	return [MaximumStoppingPower,DetectorThickness] (particle& p)
+	{
+		if(p.StoppingPower==-1)
+		{
+			if(p.theta==-1)
+				p.theta = ThetaImprovedLLM(p, DetectorThickness);
+			
+			p.StoppingPower = StoppingPower(p.GetEnergy(), p.theta, DetectorThickness);
+		}
+		return p.StoppingPower<MaximumStoppingPower;
+	};
+}
 
 

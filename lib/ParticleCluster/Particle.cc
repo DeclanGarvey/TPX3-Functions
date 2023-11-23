@@ -81,6 +81,7 @@ void particle::Clear()
 		MorphologicalClass=-1;
 		phi=-1;
 		theta=-1;
+		StoppingPower=-1;
 		AcquisitionTime=0;
 	//}
 }

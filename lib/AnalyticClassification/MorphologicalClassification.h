@@ -32,5 +32,5 @@ namespace StraightTracks
 namespace CurlyTracks
 {
  	const int MaximumSize=250;
- 	const int MaximumNodes=10;
+ 	//const int MaximumNodes=10;
 }
