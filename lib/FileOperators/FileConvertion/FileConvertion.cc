@@ -10,11 +10,23 @@ using namespace std;
 #include "ParticleFileReaderFilter.h"
 
 #include "FileWriterFetcher.h"
+#include "ParticleGeneratorBaseClass.h"
 #include "ParticleFileWriters.h"
 #include "MLStoppingPowerFileWriter.h"
 #include "FileNames.h"
 
 #include "FileConvertion.h"
+
+void WriteParticleInformation(ParticleGeneratorBaseClass* reader, ParticleFileWriter* writer, bool RemoveEdges)
+{
+	particle p;
+	while(reader->AssignParticle(p))
+	{
+		if((p.IsEdge()==false) | (RemoveEdges==false))
+			writer->AddParticle(p);
+		
+	}
+}
 
 void ConvertTo(const string& ipFileName, const string& opFileName, int ipFileType, int opFileType, double DetectorThickness, bool RemoveEdges,
 		 const string& ModelPath, const string& SelectionConfigFilePath)
@@ -24,13 +36,8 @@ void ConvertTo(const string& ipFileName, const string& opFileName, int ipFileTyp
 	
 	ParticleFileWriter* writer = GetFileWriter(opFileName, opFileType, DetectorThickness, ModelPath);
 	
-	particle p;
-	while(filteredreader->AssignParticle(p))
-	{
-		if((p.IsEdge()==false) | (RemoveEdges==false))
-			writer->AddParticle(p);
-		
-	}
+	WriteParticleInformation(filteredreader, writer, RemoveEdges);
+	
 	reader->Close();
 	writer->Close();
 }
@@ -38,9 +45,12 @@ void ConvertTo(const string& ipFileName, const string& opFileName, int ipFileTyp
 void ConvertDirectoryTo(const string& ipDirectoryName, const string& opDirectoryName, int ipFileType, int opFileType, double DetectorThickness, bool RemoveEdges,
 		 	const string& ModelPath, const string& SelectionConfigFilePath)
 {
-	cout<<ipDirectoryName<<endl<<endl;
-	DirectoryReader* dir = new DirectoryReader(ipDirectoryName);
 	string ipFileName;
+	ParticleFileWriter* writer = GetEmptyFileWriter(opFileType, DetectorThickness, ModelPath);
+	ParticleFileReader* reader = GetEmptyFileReader(ipFileType);
+	ParticleFileFilter* filteredreader = new ParticleFileFilter(reader, SelectionConfigFilePath);
+	
+	DirectoryReader* dir = new DirectoryReader(ipDirectoryName);
 	while(dir->AssignNextFile(ipFileName))
 	{
 		if( ((ipFileType!=-1) & (GetFileType(ipFileName)==ipFileType)) | 
@@ -54,14 +64,24 @@ void ConvertDirectoryTo(const string& ipDirectoryName, const string& opDirectory
 					cout<<"Processing: "<<ipFileName <<endl;
 					string NewipFileName = RemoveExtension(ipFileName)+"_new";
 					cout<<" =>Altering output file name to \'"+NewipFileName+"\' as to avoid overwriting itself."<<endl;
-					ConvertTo(ipDirectoryName +"/"+ ipFileName, opDirectoryName+"/"+RemoveExtension(NewipFileName), ipFileType, opFileType, DetectorThickness, RemoveEdges, 	
-						ModelPath,SelectionConfigFilePath);
+					
+					reader->UpdateFileInput(ipDirectoryName +"/"+ ipFileName);
+					writer->UpdateFileOutput(opDirectoryName+"/"+RemoveExtension(NewipFileName));
+					
+					WriteParticleInformation(filteredreader, writer, RemoveEdges);
+					
+					reader->Close();
+					writer->Close();
 				}
 			else
 			{
 				cout<<"Processing: "<<ipFileName<<endl;
-				ConvertTo(ipDirectoryName +"/"+ ipFileName, opDirectoryName+"/"+RemoveExtension(ipFileName), ipFileType, opFileType, DetectorThickness, RemoveEdges, 	
-					ModelPath,SelectionConfigFilePath);
+				reader->UpdateFileInput(ipDirectoryName +"/"+ ipFileName);
+				writer->UpdateFileOutput(opDirectoryName+"/"+RemoveExtension(ipFileName));
+				
+				WriteParticleInformation(filteredreader, writer, RemoveEdges);
+				reader->Close();
+				writer->Close();
 			}
 		}
 	}

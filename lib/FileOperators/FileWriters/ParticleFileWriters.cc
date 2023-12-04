@@ -11,6 +11,13 @@ using namespace std;
 
 PxFileWriter::PxFileWriter(const string& opFileName, double DetectorThickness)
 {
+	UpdateFileOutput(opFileName);
+	DetectorThickness_ = DetectorThickness;
+}
+
+void PxFileWriter::UpdateFileOutput(const string& opFileName)
+{
+	Close();
 	opInitFile_ = fopen((opFileName+".ini").c_str(),"w");
 	fprintf(opInitFile_, "[Measurement]\n");
 	fprintf(opInitFile_, "PxFile=%s\n", (RemoveDirectoryPath(opFileName) + "_px.txt").c_str());
@@ -21,10 +28,7 @@ PxFileWriter::PxFileWriter(const string& opFileName, double DetectorThickness)
 	opPxFile_ = fopen((opFileName+"_px.txt").c_str(),"w");
 	PxLineNo_=0; 
 	PxByteNo_=0;
-	DetectorThickenss_ = DetectorThickness;
 }
-
-
 
 bool PxFileWriter::AddParticle(particle const& p)
 {
@@ -52,13 +56,26 @@ void PxFileWriter::AddInitInfo(const string&  ipInfo)
 
 void PxFileWriter::Close()
 {
-	fclose(opClFile_);
-	fclose(opPxFile_);
+	if(opClFile_!=NULL)
+	{
+		fclose(opClFile_);
+		opClFile_=NULL;
+	}
+	if(opPxFile_!=NULL)
+	{
+		fclose(opPxFile_);
+		opPxFile_=NULL;
+	}
 }
 
 AngFileWriter::AngFileWriter(const string& opFileName, double DetectorThickness)
 {	
-	DetectorThickenss_ = DetectorThickness;
+	DetectorThickness_ = DetectorThickness;
+	UpdateFileOutput(opFileName);
+}
+void AngFileWriter::UpdateFileOutput(const string& opFileName)
+{
+	Close();
 	if(opFileName.size()>8)
 	{
 		
@@ -88,13 +105,23 @@ bool AngFileWriter::AddParticle(particle const& p)
 
 void AngFileWriter::Close()
 {
-	fclose(opFile_);
+	if(opFile_!=NULL)
+	{
+		fclose(opFile_);
+		opFile_=NULL;
+	}
 }
 
 
 SpFileWriter::SpFileWriter(const string& opFileName, double DetectorThickness)
 {	
 	DetectorThickness_ = DetectorThickness;
+	UpdateFileOutput(opFileName);
+}
+
+void SpFileWriter::UpdateFileOutput(const string& opFileName)
+{
+	Close();
 	opFile_ = fopen((RemoveExtension(opFileName)+ "_sp.txt").c_str(),"w");
 }
 
@@ -116,14 +143,24 @@ bool SpFileWriter::AddParticle(particle const& p)
 
 void SpFileWriter::Close()
 {
-	fclose(opFile_);
+	if(opFile_!=NULL)
+	{
+		fclose(opFile_);
+		opFile_=NULL;
+	}
 }
 
 
 
 FeatFileWriter::FeatFileWriter(const string& opFileName, double DetectorThickness)
 {	
-	DetectorThickenss_ = DetectorThickness;
+	DetectorThickness_ = DetectorThickness;
+	UpdateFileOutput(opFileName);
+}
+
+void FeatFileWriter::UpdateFileOutput(const string& opFileName)
+{
+	Close();
 	if(opFileName.size()>9)
 	{
 		
@@ -146,9 +183,9 @@ bool FeatFileWriter::AddParticle(particle const& p)
 		
 		auto dimsxy = BoxDimensions(p);
 		
-		double theta = ThetaImprovedLLM(p, DetectorThickenss_);
-		double sp = StoppingPower(p.GetEnergy(), theta, DetectorThickenss_); 
-		double weight = FleunceContribution(theta, DetectorThickenss_);
+		double theta = ThetaImprovedLLM(p, DetectorThickness_);
+		double sp = StoppingPower(p.GetEnergy(), theta, DetectorThickness_); 
+		double weight = FleunceContribution(theta, DetectorThickness_);
 		
 		fprintf(opFile_, "%d %lf %lf %lf %lf %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
 				 p.GetRegionID(), p.PrimaryEnergy, p.theta, p.phi, p.GetMinToA(), p.GetSize(), p.GetEnergy(), StandardDeviationEnergy(p), NearestNeighbours8Fold(p),stds[0], stds[1],
@@ -162,13 +199,23 @@ bool FeatFileWriter::AddParticle(particle const& p)
 
 void FeatFileWriter::Close()
 {
-	fclose(opFile_);
+	if(opFile_!=NULL)
+	{
+		fclose(opFile_);
+		opFile_=NULL;
+	}
 }
 
 SatFileWriter::SatFileWriter(const string& opFileName, double DetectorThickness)
 
 {	
-	DetectorThickenss_ = DetectorThickness;
+	DetectorThickness_ = DetectorThickness;
+	UpdateFileOutput(opFileName);
+}
+
+void SatFileWriter::UpdateFileOutput(const string& opFileName)
+{
+	Close();
 	if(opFileName.size()>8)
 	{
 		if(opFileName.substr(opFileName.size()-8)!="_sat.txt")
@@ -179,8 +226,6 @@ SatFileWriter::SatFileWriter(const string& opFileName, double DetectorThickness)
 	else 
 		opFile_ = fopen((opFileName+ "_sat.txt").c_str(),"w");
 }
-
-
 
 bool SatFileWriter::AddParticle(particle const& p)
 {
@@ -198,16 +243,32 @@ bool SatFileWriter::AddParticle(particle const& p)
 
 void SatFileWriter::Close()
 {
-	fclose(opFile_);
+	if(opFile_!=NULL)
+	{
+		fclose(opFile_);
+		opFile_=NULL;	
+	}
 }
 
 
 FieldTrackingFileWriter::FieldTrackingFileWriter(const string& opFileName, double DetectorThickness)
 {	
 	DetectorThickness_ = DetectorThickness;
-	opFile_ = fopen((RemoveExtension(opFileName)+ "_tracking.txt").c_str(),"w");
+	UpdateFileOutput(opFileName);
 }
-
+void FieldTrackingFileWriter::UpdateFileOutput(const string& opFileName)
+{
+	Close();
+	if(opFileName.size()>8)
+	{
+		if(opFileName.substr(opFileName.size()-8)!="_sat.txt")
+			opFile_ = fopen((opFileName + "_sat.txt").c_str(),"w");
+		else
+			opFile_ = fopen((opFileName).c_str(), "w");
+	}
+	else 
+		opFile_ = fopen((opFileName+ "_sat.txt").c_str(),"w");
+}
 bool FieldTrackingFileWriter::AddParticle(particle const& p)
 {
 	if(p.IsEmpty()==false)
@@ -224,5 +285,9 @@ bool FieldTrackingFileWriter::AddParticle(particle const& p)
 
 void FieldTrackingFileWriter::Close()
 {
-	fclose(opFile_);
+	if(opFile_!=NULL)
+	{
+		fclose(opFile_);
+		opFile_=NULL;
+	}
 }

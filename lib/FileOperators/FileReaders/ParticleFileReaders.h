@@ -19,19 +19,23 @@ class particle;
 class ParticleFileReader : public ParticleGeneratorBaseClass
 {
 	protected:
-		FILE* ipFile_;
+		FILE* ipFile_=NULL;
 	public:
 		virtual ~ParticleFileReader() {}
 		//virtual bool AssignParticle(particle& p){return false;};
-		virtual void Close() {};
+		virtual void UpdateFileInput(const std::string& ipFileName) {};
+		virtual void Close() {ipFile_=NULL;};
 };
 
 ParticleFileReader* GetFileReader(const std::string& ipFileName, int ipFileType);
+ParticleFileReader* GetEmptyFileReader(int ipFileType);
 
 class PxFileReader : public ParticleFileReader
 {
 	public:
-		PxFileReader(const std::string& ipFileName);
+		PxFileReader() {};
+		PxFileReader(const std::string& ipFileName){ UpdateFileInput(ipFileName); }
+		void UpdateFileInput(const std::string& ipFileName);
 		bool AssignParticle(particle &p);
 		void Close() {
 			if(ipFile_!=NULL)
@@ -45,7 +49,9 @@ class PxFileReader : public ParticleFileReader
 class AngFileReader : public ParticleFileReader
 {
 	public:
-		AngFileReader(const std::string& ipFileName);
+		AngFileReader() {}
+		AngFileReader(const std::string& ipFileName){ UpdateFileInput(ipFileName); }
+		void UpdateFileInput(const std::string& ipFileName);
 		bool AssignParticle(particle &p);
 		void Close() {
 			if(ipFile_!=NULL)
@@ -59,7 +65,9 @@ class AngFileReader : public ParticleFileReader
 class SimFileReader : public ParticleFileReader
 {
 	public:
-		SimFileReader(const std::string& ipFileName);
+		SimFileReader() {}
+		SimFileReader(const std::string& ipFileName){ UpdateFileInput(ipFileName); }
+		void UpdateFileInput(const std::string& ipFileName);
 		bool AssignParticle(particle &p);
 		void Close() {
 			if(ipFile_!=NULL)
@@ -72,8 +80,8 @@ class SimFileReader : public ParticleFileReader
 
 class ROOTFileReader : public ParticleFileReader
 {
-	TFile* File_;
-	TTree*  Data_; 
+	TFile* File_=NULL;
+	TTree*  Data_=NULL; 
 	
 	int CurrentEntryNo;
 	
@@ -86,16 +94,18 @@ class ROOTFileReader : public ParticleFileReader
 	double PrimaryEnergy;
 	int ParticleType;
 	public:
-		ROOTFileReader(const std::string& ipFileName);
+		ROOTFileReader() {}
+		ROOTFileReader(const std::string& ipFileName){ UpdateFileInput(ipFileName); }
+		void UpdateFileInput(const std::string& ipFileName);
 		bool AssignParticle(particle &p);
 		void Close();
 };
 
 class SATRAMFileReader : public ParticleFileReader
 {
-	TFile* File_;
-	TTree*  dscData_;
-	TTree* ClusterFile_;
+	TFile* File_=NULL;
+	TTree*  dscData_=NULL;
+	TTree* ClusterFile_=NULL;
 	double MaxOccupancy_=5;
 	double MinOccupancy_ = 0;
 	int CurrentClusterEntry;
@@ -113,7 +123,9 @@ class SATRAMFileReader : public ParticleFileReader
 	short good_region;
 	float acq_time;
 	public:
-		SATRAMFileReader(const std::string& ipFileName);
+		SATRAMFileReader() {}
+		SATRAMFileReader(const std::string& ipFileName){ UpdateFileInput(ipFileName); }
+		void UpdateFileInput(const std::string& ipFileName);
 		bool AssignParticle(particle &p);
 		void SetMaximumOccupancy(double NewMaxOccupancy);
 		void SetMinimumOccupancy(double NewMaxOccupancy);
@@ -142,7 +154,7 @@ class StoppingPowerFileReader
 	double StoppingPower_;
 	
 	public:
-		StoppingPowerFileReader() {};
+		StoppingPowerFileReader() {}
 		StoppingPowerFileReader(const std::string& ipFileName, int AcquisitionRegion);
 		bool ReadNextEntry();
 		int GetEntryNumber() const;
@@ -170,7 +182,7 @@ class StoppingPowerFileReader
 class FluenceFileReader
 {
 	protected:
-		FILE* ipFile_;
+		FILE* ipFile_=NULL;
 		double DetectorWidth_;
 		double DetectorThickness_;
 		double FluencePerFile_;
