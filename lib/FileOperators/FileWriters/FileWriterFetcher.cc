@@ -34,7 +34,7 @@ ParticleFileWriter* GetFileWriter(const string& opFileName, int FileType, double
 			case 8:
 				return new FieldTrackingFileWriter(opFileName, DetectorThickness);
 			default:
-				cout<<opFileName<<" is an unknown data type(1:_px.txt, 2:_ang.txt, 5:_feat.txt, 6:_sp.txt)"<<endl;
+				cout<<FileType<<" is an unknown data type(1:_px.txt, 2:_ang.txt, 5:_feat.txt, 6:_sp.txt)"<<endl;
 				break;
 		}
 	}
@@ -49,11 +49,58 @@ ParticleFileWriter* GetFileWriter(const string& opFileName, int FileType, double
 				return new MLFieldTrackingFileWriter(opFileName, DetectorThickness, ModelPath);
 				break;
 			default:
-				cout<<opFileName<<" is an unknown ML data type(6:_sp.txt)"<<endl;
+				cout<<FileType<<" is an unknown ML data type(6:_sp.txt)"<<endl;
 				break;
 		}
 	}
 	return new ParticleFileWriter;
 }
+
+ParticleFileWriter* GetEmptyFileWriter(int FileType, double DetectorThickness, const string& ModelPath)
+{
+	if(ModelPath.empty())
+	{
+		switch(FileType)
+		{
+			case 1:
+				return new PxFileWriter(DetectorThickness);
+				break;
+			case 2:
+				return new AngFileWriter(DetectorThickness);
+				break;
+			case 5: 
+				return new FeatFileWriter(DetectorThickness);
+				break;
+			case 6:
+				return new SpFileWriter(DetectorThickness);
+				break;
+			case 7:
+				return new SatFileWriter(DetectorThickness);
+				break;
+			case 8:
+				return new FieldTrackingFileWriter(DetectorThickness);
+			default:
+				cout<<FileType<<" is an unknown data type(1:_px.txt, 2:_ang.txt, 5:_feat.txt, 6:_sp.txt)"<<endl;
+				break;
+		}
+	}
+	else
+	{
+		switch(FileType)
+		{
+			case 6:
+				return new MLSpFileWriter(DetectorThickness, ModelPath);
+				break;
+			case 8:
+				return new MLFieldTrackingFileWriter(DetectorThickness, ModelPath);
+				break;
+			default:
+				cout<<FileType<<" is an unknown ML data type(6:_sp.txt)"<<endl;
+				break;
+		}
+	}
+	return new ParticleFileWriter;
+}
+
 
 

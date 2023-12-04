@@ -12,6 +12,7 @@ class MLSpFileWriter : public SpFileWriter
 		std::unique_ptr<RandomForrestTheta> ThetaModel;
 	public:
 		MLSpFileWriter(const std::string& opFileName, double DetectorThickness, const std::string& ModelPath);
+		MLSpFileWriter(double DetectorThickness, const string& ModelPath);
 		bool AddParticle(particle const& p);
 };
 

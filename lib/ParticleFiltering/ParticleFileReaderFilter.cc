@@ -12,7 +12,15 @@ ParticleFileFilter::ParticleFileFilter(ParticleFileReader* reader, const std::st
 	GenerateFiltersFromConfig(ConfigFileFilters);
 }
 
-
+ParticleFileFilter::ParticleFileFilter(const std::string& ConfigFileFilters)
+{
+	GenerateFiltersFromConfig(ConfigFileFilters);
+}
+void ParticleFileFilter::operator() (ParticleFileReader* NewReader)
+{
+	reader->Close();
+	reader = NewReader;
+}
 void ParticleFileFilter::GenerateFiltersFromConfig(const std::string& ConfigFileFilters)
 {
 	if(ConfigFileFilters.empty()==false)

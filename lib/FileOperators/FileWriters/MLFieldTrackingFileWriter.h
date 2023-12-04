@@ -12,6 +12,7 @@ class MLFieldTrackingFileWriter : public FieldTrackingFileWriter
 		std::unique_ptr<RandomForrestTheta> ThetaModel;
 	public:
 		MLFieldTrackingFileWriter(const std::string& opFileName, double DetectorThickness, const std::string& ModelPath);
+		MLFieldTrackingFileWriter(double DetectorThickness, const string& ModelPath);
 		bool AddParticle(particle const& p);
 };
 

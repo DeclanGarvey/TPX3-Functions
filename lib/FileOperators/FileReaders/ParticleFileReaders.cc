@@ -36,14 +36,40 @@ ParticleFileReader* GetFileReader(const string& ipFileName, int ipFileType)
 			return new SimFileReader(ipFileName);
 			break;
 		default:
-			cout<<ipFileName<<" is an unknown data type(0: .root(standard), 1:_px.txt, 2:_ang.txt, 3: .root(SATRAM), 4:_sim.txt)"<<endl;
+			cout<<ipFileType<<" is an unknown data type(0: .root(standard), 1:_px.txt, 2:_ang.txt, 3: .root(SATRAM), 4:_sim.txt)"<<endl;
+			break;
+	}
+	return new ParticleFileReader;
+}
+
+ParticleFileReader* GetEmptyFileReader(int ipFileType)
+{
+	switch(ipFileType)
+	{
+		case 0:
+			return new ROOTFileReader();
+			break;
+		case 1:
+			return new PxFileReader();
+			break;
+		case 2:
+			return new AngFileReader();
+			break;
+		case 3:
+			return new SATRAMFileReader();
+			break;
+		case 4:
+			return new SimFileReader();
+			break;
+		default:
+			cout<<ipFileType<<" is an unknown data type(0: .root(standard), 1:_px.txt, 2:_ang.txt, 3: .root(SATRAM), 4:_sim.txt)"<<endl;
 			break;
 	}
 	return new ParticleFileReader;
 }
 
 
-PxFileReader::PxFileReader(const string& ipFileName)
+void PxFileReader::UpdateFileInput(const string& ipFileName)
 {
 	ipFile_ =fopen((ipFileName).c_str(),"r");
 }
@@ -69,8 +95,9 @@ bool PxFileReader::AssignParticle(particle &p)
 }
 
 
-AngFileReader::AngFileReader(const string& ipFileName)
+void AngFileReader::UpdateFileInput(const string& ipFileName)
 {
+	Close();
 	ipFile_ =fopen((ipFileName).c_str(),"r");
 }
 
@@ -96,8 +123,9 @@ bool AngFileReader::AssignParticle(particle &p)
 }
 
 
-SimFileReader::SimFileReader(const string& ipFileName)
+void SimFileReader::UpdateFileInput(const string& ipFileName)
 {
+	Close();
 	ipFile_ =fopen((ipFileName).c_str(),"r");
 }
 
@@ -124,8 +152,9 @@ bool SimFileReader::AssignParticle(particle &p)
 }
 
 
-ROOTFileReader::ROOTFileReader(const string& ipFileName)
+void ROOTFileReader::UpdateFileInput(const string& ipFileName)
 {
+	Close();
 
 	File_ = new TFile(ipFileName.c_str(), "OPEN");
 	Data_ = (TTree*)  File_->Get("clusteredData");
@@ -167,13 +196,18 @@ bool ROOTFileReader::AssignParticle(particle &p)
 }
 void ROOTFileReader::Close() 
 {
-	File_->Close();
+	if(File_!=NULL)
+	{
+		File_->Close();
+		File_=NULL;
+	}
 }
 
 
-SATRAMFileReader::SATRAMFileReader(const string& ipFileName)
+void SATRAMFileReader::UpdateFileInput(const string& ipFileName)
 {
-
+	Close();
+	
 	File_ = new TFile(ipFileName.c_str(), "OPEN");
 	dscData_ = (TTree*)  File_->Get("dscData");
 	ClusterFile_ = (TTree*) File_->Get("clusterFile");
@@ -279,7 +313,11 @@ double SATRAMFileReader::GetAcquisitionTime()
 
 void SATRAMFileReader::Close()
 {
-	File_->Close();
+	if(File_!=NULL)
+	{
+		File_->Close();
+		File_=NULL;
+	}
 }
 
 
