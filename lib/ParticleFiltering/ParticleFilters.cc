@@ -7,6 +7,7 @@ using namespace std;
 #include "AngleCalulationFunctions.h"
 #include "MorphologicalClassification.h"
 #include "FluenceStoppingPower.h"
+#include "ClusterFeatures.h"
 
 #include "ParticleFilters.h"
 
@@ -42,6 +43,10 @@ function<bool(particle& p)> GetFilter(const string& FilterName, const string& Fi
 		return CreateMinimumStoppingPowerFilter(FilterValue);
 	else if(FilterName=="MaximumStoppingPower")
 		return CreateMaximumStoppingPowerFilter(FilterValue);
+	else if(FilterName=="MinimumEndPoints")
+		return CreateMinimumEndPointsFilter(stoi(FilterValue));
+	else if(FilterName=="MaximumEndPoints")
+		return CreateMaximumEndPointsFilter(stoi(FilterValue));
 	else 
 	{
 		cout<<"Warning: Unknown filter type found \'"<<FilterName<<"\' is being ommited along with value \'"<<FilterValue<<"\'."<<endl;
@@ -53,7 +58,7 @@ function<bool(particle&)> CreateMinimumSizeFilter(int MinimumSize)
 {
 	return [MinimumSize](particle& p)
 	{
-		return p.GetSize()>MinimumSize;
+		return p.GetSize()>=MinimumSize;
 	};
 }
 
@@ -61,7 +66,7 @@ function<bool(particle&)> CreateMaximumSizeFilter(int MaximumSize)
 {
 	return [MaximumSize](particle& p)
 	{
-		return p.GetSize()<MaximumSize;
+		return p.GetSize()<=MaximumSize;
 	};
 }
 
@@ -70,7 +75,7 @@ function<bool(particle&)> CreateMinimumEnergyFilter(double MinimumEnergy)
 {
 	return [MinimumEnergy](particle& p)
 	{
-		return p.GetEnergy()>MinimumEnergy;
+		return p.GetEnergy()>=MinimumEnergy;
 	};
 }
 
@@ -78,7 +83,7 @@ function<bool(particle&)> CreateMaximumEnergyFilter(double MaximumEnergy)
 {
 	return [MaximumEnergy](particle& p)
 	{
-		return p.GetEnergy()<MaximumEnergy;
+		return p.GetEnergy()<=MaximumEnergy;
 	};
 }
 
@@ -94,7 +99,7 @@ function<bool(particle&)> CreateMinimumPrimaryEnergyFilter(double MinimumPrimary
 {
 	return [MinimumPrimaryEnergy](particle& p)
 	{
-		return p.PrimaryEnergy>MinimumPrimaryEnergy;
+		return p.PrimaryEnergy>=MinimumPrimaryEnergy;
 	};
 }
 
@@ -102,7 +107,7 @@ function<bool(particle&)> CreateMaximumPrimaryEnergyFilter(double MaximumPrimary
 {
 	return [MaximumPrimaryEnergy](particle& p)
 	{
-		return p.PrimaryEnergy<MaximumPrimaryEnergy;
+		return p.PrimaryEnergy<=MaximumPrimaryEnergy;
 	};
 }
 
@@ -122,7 +127,7 @@ function<bool(particle&)> CreateMinimumThetaFilter(string MinimumThetaInfo)
 	{
 		if(p.theta==-1)
 			p.theta = ThetaImprovedLLM(p, DetectorThickness);
-		return p.theta>MinimumTheta;
+		return p.theta>=MinimumTheta;
 	};
 }
 
@@ -143,7 +148,7 @@ function<bool(particle&)> CreateMaximumThetaFilter(string MaximumThetaInfo)
 	{
 		if(p.theta==-1)
 			p.theta = ThetaImprovedLLM(p, DetectorThickness);
-		return p.theta<MaximumTheta;
+		return p.theta<=MaximumTheta;
 	};
 }
 
@@ -163,7 +168,7 @@ function<bool(particle&)> CreateMinimumPhiFilter(string MinimumPhiInfo)
 	{
 		if(p.phi==-1)
 			p.phi = PhiTimeWeighted(p);
-		return p.phi>MinimumPhi;
+		return p.phi>=MinimumPhi;
 	};
 }
 
@@ -184,7 +189,7 @@ function<bool(particle&)> CreateMaximumPhiFilter(string MaximumPhiInfo)
 	{
 		if(p.phi==-1)
 			p.phi = PhiTimeWeighted(p);
-		return p.phi<MaximumPhi;
+		return p.phi<=MaximumPhi;
 	};
 }
 
@@ -230,7 +235,7 @@ function<bool(particle&)> CreateMinimumStoppingPowerFilter(string MinimumStoppin
 			
 			p.StoppingPower = StoppingPower(p.GetEnergy(), p.theta, DetectorThickness);
 		}
-		return p.StoppingPower>MinimumStoppingPower;
+		return p.StoppingPower>=MinimumStoppingPower;
 	};
 }
 
@@ -255,8 +260,26 @@ function<bool(particle&)> CreateMaximumStoppingPowerFilter(string MaximumStoppin
 			
 			p.StoppingPower = StoppingPower(p.GetEnergy(), p.theta, DetectorThickness);
 		}
-		return p.StoppingPower<MaximumStoppingPower;
+		return p.StoppingPower<=MaximumStoppingPower;
 	};
 }
+
+
+function<bool(particle&)> CreateMinimumEndPointsFilter(int MinimumEndPoints)
+{
+	return [MinimumEndPoints](particle& p)
+	{
+		return NumberOfEndPoints(p)>=MinimumEndPoints;
+	};
+}
+
+function<bool(particle&)> CreateMaximumEndPointsFilter(int MaximumEndPoints)
+{
+	return [MaximumEndPoints](particle& p)
+	{
+		return NumberOfEndPoints(p)<=MaximumEndPoints;
+	};
+}
+
 
 

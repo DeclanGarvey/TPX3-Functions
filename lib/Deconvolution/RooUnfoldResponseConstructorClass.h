@@ -10,9 +10,9 @@ class RooUnfoldResponseConstructorClass
 		TH1D* truth;
 		int NoOfParticleGroups=2;
 		std::vector<int> ParticleTypes={2212,11};
-		int NoStoppingPowerBins = 54;//60;//
+		int NoStoppingPowerBins = 44;//60;//
 		double MinStoppingPower = 3.0;//0;//
-		double MaxStoppingPower = 30.0;
+		double MaxStoppingPower = 25.0;
 		double StoppingPowerBinWidth=(MaxStoppingPower-MinStoppingPower)/NoStoppingPowerBins;
 		
 		std::vector<int> NoEnergyBins= {77, 5};

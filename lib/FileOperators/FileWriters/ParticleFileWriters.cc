@@ -291,3 +291,4 @@ void FieldTrackingFileWriter::Close()
 		opFile_=NULL;
 	}
 }
+

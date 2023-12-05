@@ -397,3 +397,70 @@ double MaximumDistance(particle const& p)
 	
 	return m;
 }
+
+int NumberOfEndPoints(particle const& p)
+{
+	int EndPointNumber = 0;
+	
+	int Neighbours[8];
+	int NumberOfNeighbours,NumberofTransitions;
+	for (auto i=p.begin(); i != p.end(); i++ ) 
+	{
+		for(int ii=0;ii<8;ii++) Neighbours[ii] = 0;
+		NumberOfNeighbours=0;
+		for (auto j=p.begin(); j != p.end(); j++ ) 
+		{
+			if(( (i->x) == j->x) & ((i->y+1) == j->y))
+			{
+				Neighbours[0]=1;
+				NumberOfNeighbours++;
+			}
+			
+			if(( (i->x) == j->x+1) & ((i->y+1) == j->y))
+			{
+				Neighbours[1]=1;
+				NumberOfNeighbours++;
+			}
+
+			if(( (i->x) == j->x+1) & ((i->y) == j->y))
+			{
+				Neighbours[2]=1;
+				NumberOfNeighbours++;
+			}
+			if(( (i->x) == j->x+1) & ((i->y-1) == j->y))
+			{
+				Neighbours[3]=1;
+				NumberOfNeighbours++;
+			}
+			if(( (i->x) == j->x) & ((i->y-1) == j->y))
+			{
+				Neighbours[4]=1;
+				NumberOfNeighbours++;
+			}
+			if(( (i->x) == j->x-1) & ((i->y-1) == j->y))
+			{
+				Neighbours[5]=1;
+				NumberOfNeighbours++;
+			}
+			if(( (i->x) == j->x-1) & ((i->y) == j->y))
+			{
+				Neighbours[6]=1;
+				NumberOfNeighbours++;
+			}
+			if(( (i->x) == j->x-1) & ((i->y+1) == j->y))
+			{
+				Neighbours[7]=1;
+				NumberOfNeighbours++;
+			}
+		}
+		
+		NumberofTransitions = 0;
+		for(int ii=0;ii<7;ii++)
+			NumberofTransitions += static_cast<int>((Neighbours[ii+1] -Neighbours[ii])>0);
+		
+		if((NumberofTransitions<=1) & (NumberOfNeighbours<=3))
+			EndPointNumber++;
+	}
+	return  EndPointNumber;
+}
+
