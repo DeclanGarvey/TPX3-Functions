@@ -5,6 +5,7 @@ using namespace std;
 #include "ParticleFileWriters.h"
 #include "MLStoppingPowerFileWriter.h"
 #include "MLFieldTrackingFileWriter.h"
+#include "HighZSearchFileWriter.h"
 
 #include "FileWriterFetcher.h"
 
@@ -33,6 +34,7 @@ ParticleFileWriter* GetFileWriter(const string& opFileName, int FileType, double
 				break;
 			case 8:
 				return new FieldTrackingFileWriter(opFileName, DetectorThickness);
+				break;
 			default:
 				cout<<FileType<<" is an unknown data type(1:_px.txt, 2:_ang.txt, 5:_feat.txt, 6:_sp.txt)"<<endl;
 				break;
@@ -47,6 +49,9 @@ ParticleFileWriter* GetFileWriter(const string& opFileName, int FileType, double
 				break;
 			case 8:
 				return new MLFieldTrackingFileWriter(opFileName, DetectorThickness, ModelPath);
+				break;
+			case 9:
+				return new HighZSearchFileWriter(opFileName, DetectorThickness, ModelPath);
 				break;
 			default:
 				cout<<FileType<<" is an unknown ML data type(6:_sp.txt)"<<endl;
@@ -79,6 +84,7 @@ ParticleFileWriter* GetEmptyFileWriter(int FileType, double DetectorThickness, c
 				break;
 			case 8:
 				return new FieldTrackingFileWriter(DetectorThickness);
+				break;
 			default:
 				cout<<FileType<<" is an unknown data type(1:_px.txt, 2:_ang.txt, 5:_feat.txt, 6:_sp.txt)"<<endl;
 				break;
@@ -93,6 +99,9 @@ ParticleFileWriter* GetEmptyFileWriter(int FileType, double DetectorThickness, c
 				break;
 			case 8:
 				return new MLFieldTrackingFileWriter(DetectorThickness, ModelPath);
+				break;
+			case 9:
+				return new HighZSearchFileWriter(DetectorThickness, ModelPath);
 				break;
 			default:
 				cout<<FileType<<" is an unknown ML data type(6:_sp.txt)"<<endl;

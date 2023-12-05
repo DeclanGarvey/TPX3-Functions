@@ -42,10 +42,14 @@ int GetFileType(const string& ipFileName)
 				else if(ipFileName.size()>9){
 					if(ipFileName.substr(ipFileName.size()-9)=="_feat.txt")
 						FileType=5;
-				}
-				else if(ipFileName.size()>13){
-					if(ipFileName.substr(ipFileName.size()-13)=="_tracking.txt")
-						FileType=8;
+					else if(ipFileName.size()>12){
+						if(ipFileName.substr(ipFileName.size()-12)=="_zsearch.txt")
+							FileType=9;
+						else if(ipFileName.size()>13){
+							if(ipFileName.substr(ipFileName.size()-13)=="_tracking.txt")
+								FileType=8;
+						}
+					}
 				}
 			}
 		}
@@ -75,10 +79,14 @@ string RemoveExtension(const string& FileName)
 				else if(FileName.size()>9){
 					if(FileName.substr(FileName.size()-9)=="_feat.txt")
 						return FileName.substr(0,FileName.size()-9);
-				}
-				else if(FileName.size()>13){
-					if(FileName.substr(FileName.size()-13)=="_tracking.txt")
-						return FileName.substr(0,FileName.size()-13);
+					else if(FileName.size()>12){
+						if(FileName.substr(FileName.size()-12)=="_zsearch.txt")
+							return FileName.substr(0,FileName.size()-12);
+						else if(FileName.size()>13){
+							if(FileName.substr(FileName.size()-13)=="_tracking.txt")
+								return FileName.substr(0,FileName.size()-13);
+						}
+					}
 				}
 			}
 		}
