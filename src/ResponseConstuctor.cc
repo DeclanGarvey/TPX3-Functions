@@ -42,13 +42,12 @@ int main (int argc, const char *argv[])
 
 	string opFileName;            /* output file name */
     	string ipFileName; 		/* Input file name */
-	string ResponseFileName;
 	double DetectorThickness = 0.05;
 	bool InputIsDirectory=false;
 	string ConfigurationFileName;
 	string ResponseMatrixImageSaveDirectory;
 	/* Collect the arguments from the command line */
-	while ((opt = getopt (argc, (char * const*)argv, "?ho:dt:f:ez:psc:")) != EOF)
+	while ((opt = getopt (argc, (char * const*)argv, "?ho:dt:f:ez:p:sc:")) != EOF)
 	{
 		/* Process the arguments */
 		switch (opt)
@@ -99,7 +98,7 @@ int main (int argc, const char *argv[])
 			else
 				ConstructResponse(ipFileName, opFileName,ConfigurationFileName, DetectorThickness);
 			if(ResponseMatrixImageSaveDirectory.empty()==false)
-				PrintUnfoldingMatrix(ResponseFileName, ResponseMatrixImageSaveDirectory);	
+				PrintUnfoldingMatrix(opFileName, ResponseMatrixImageSaveDirectory);	
 		}
 		else
 		{
