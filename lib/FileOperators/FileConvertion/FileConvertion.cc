@@ -6,6 +6,7 @@ using namespace std;
 
 #include "Particle.h"
 #include "DirectoryReaders.h"
+#include "ParticleFileReaderFetcher.h"
 #include "ParticleFileReaders.h"
 #include "ParticleFileReaderFilter.h"
 

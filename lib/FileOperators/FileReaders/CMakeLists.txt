@@ -1,5 +1,5 @@
 
-add_library(ParticleFileReaders ParticleFileReaders.cc)
+add_library(ParticleFileReaders ParticleFileReaders.cc ParticleFileReaderFetcher.cc)
 target_include_directories(ParticleFileReaders PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(ROOT)
 target_link_libraries(ParticleFileReaders  PUBLIC ROOT::Core ROOT::RIO ROOT::Net ROOT::Tree)

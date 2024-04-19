@@ -34,9 +34,6 @@ class ParticleFileReader : public ParticleGeneratorBaseClass
 		virtual ~ParticleFileReader() {Close();}
 };
 
-ParticleFileReader GetFileReader(const std::string& ipFileName, int ipFileType);
-ParticleFileReader GetEmptyFileReader(int ipFileType);
-
 class PxFileReader : public ParticleFileReader
 {
 	public:
