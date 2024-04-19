@@ -4,7 +4,7 @@ add_subdirectory(GeneralisedONNXModel)
 add_subdirectory(Angles)
 add_subdirectory(FileOperators)
 add_subdirectory(ParticleFiltering)
-add_subdirectory(MLClassification)
+#add_subdirectory(MLClassification)
 
 find_package(RooUnfold)
 if(RooUnfold_FOUND)
