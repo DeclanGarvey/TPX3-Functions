@@ -2,6 +2,7 @@
 #include <fstream>
 #include <assert.h>
 #include <math.h>
+#include <bits/stdc++.h>
 using namespace std;
 
 #include "TMath.h"
@@ -72,27 +73,27 @@ double PixelsInLine(particle const&p, int XFuncOrYYFunc, PixelHit const& p1, Pix
 
 double Linearity(particle const& p)
 {
-	if(p.GetSize()>2)
+	auto skel = Skeletonise(p,0,5);
+	if(skel.GetSize()>2)
 	{
 		double linearity=0;
-		
-		// implementing d = |Ay + Bx + C|/sqrt(A*A+B*B)
-		auto mc = LineFit(p);
+		auto mc = LineFit(skel);
 		double denom = sqrt(1+mc[1]*mc[1]);
-		for (auto i = p.begin(); i != p.end(); i++ ) 
+		for (auto i = skel.begin(); i != skel.end(); i++ ) 
 		{
 			if(mc[0]==0)
 			{
 				if(abs(i->y - (i->x*mc[1] + mc[2]))<=0.7071*denom)
-					linearity+=1;
+						linearity+=1;
 			}
-			else
+			else	
 			{
 				if(abs(i->x - (i->y*mc[1] + mc[2]))<=0.7071*denom)
-					linearity+=1;
+						linearity+=1;
+
 			}
 		}
-		return linearity/p.GetSize();
+		return linearity/skel.GetSize();
 	}
 	else
 	{
@@ -148,19 +149,50 @@ particle RotateToNormal(particle const& p)
 	covxy = meanxy - meanx*meany;
     	
     	particle RotatedP;
-    	if(p.GetSize()<=1)
+    	if(p.GetSize()==1)
     	{
     		auto i=p.begin();
 		RotatedP.Insert(*i);
     	}
-    	else if(varx==0)
+    	else if(p.GetSize()==2)
     	{
-    		for (auto i=p.begin(); i != p.end(); i++ ) 
-		{
-			RotatedP.Insert(PixelHit{i->y, i->x, i->time, i->energy});
-		}
+    		auto i=p.begin();
+		RotatedP.Insert(PixelHit{1,
+					0,
+					i->time,
+					i->energy});
+		i++;
+		RotatedP.Insert(PixelHit{2,
+						0,
+						i->time,
+						i->energy});
     	}
     	else
+    	{
+    		double angle1 = atan2(covxy,varx);
+    		double angle2 = atan2(covxy,vary);
+    		double c,s;
+    		if(vary<=varx)
+    		{
+    			c = cos(-angle1);
+    			s = sin(-angle1);
+    		}
+    		else 
+    		{
+    			c = sin(-angle2);
+    			s = cos(-angle2);
+    		}
+    		
+    		for (auto i=p.begin(); i != p.end(); i++ ) 
+		{
+			RotatedP.Insert(PixelHit{c*(i->x-oldmeanx) - s*(i->y-oldmeany),
+						 s*(i->x-oldmeanx) + c*(i->y-oldmeany),
+						i->time,
+						i->energy});
+		}
+    			
+    	}
+    	/*else
     	{
 		double sumvars = varx + vary;
 		double diffvars = varx - vary;
@@ -192,7 +224,7 @@ particle RotateToNormal(particle const& p)
 						i->time,
 						i->energy});
 		}
-	}
+	}*/
 	
 	return RotatedP;
 }
@@ -233,20 +265,29 @@ vector<double> WeightedBoxStds(particle const& p)
 
 vector<double> BoxDimensions(particle const& p)
 {
-	double minx=256,maxx=-1,miny=256, maxy=-1;
-	for (auto i=p.begin(); i != p.end(); i++ ) 
+	if(p.GetSize()>1)
 	{
-		if(i->x<minx)
-			minx=i->x;
-		if(i->x>maxx)
-			maxx=i->x;
-		if(i->y<miny)
-			miny=i->y;
-		if(i->y>maxy)
-			maxy=i->y;
+		double minx=256,maxx=-1,miny=256, maxy=-1;
+		for (auto i=p.begin(); i != p.end(); i++ ) 
+		{
+			if(i->x<minx)
+				minx=i->x;
+			if(i->x>maxx)
+				maxx=i->x;
+			if(i->y<miny)
+				miny=i->y;
+			if(i->y>maxy)
+				maxy=i->y;
+		}
+		vector<double> ans{maxx-minx,maxy-miny};
+		return ans;
 	}
-	vector<double> ans{maxx-minx,maxy-miny};
-	return ans;
+	else
+	{
+		vector<double> ans{0,0};
+		return ans;
+	}
+		
 }
 
 double StandardDeviationTime(particle const& p)
@@ -397,6 +438,74 @@ double MaximumDistance(particle const& p)
 	
 	return m;
 }
+int ElectronCloudSize(particle const& p)
+{
+	int Cloud=0;
+	for (auto i=p.begin(); i != p.end(); i++ ) 
+	{
+		if(i->energy <= (0.626*p.GetHeight() - 103.75 ))
+		{
+			//if(i->energy>5)
+				Cloud++;
+		}
+	}
+	return Cloud;
+}
+double ElectronCloudEnergy(particle const& p)
+{
+	double Cloud=0;
+	for (auto i=p.begin(); i != p.end(); i++ ) 
+	{
+		//if(i->energy <= (10))
+		{
+			if(i->energy>5)
+				Cloud+=i->energy;
+		}
+	}
+	return Cloud;
+}
+double EnergyOfLine(particle const& p)
+{
+	if(p.GetSize()>2)
+	{
+		double LineEnergy = 0;
+		double LineSize = 0;
+		
+		// implementing d = |Ay + Bx + C|/sqrt(A*A+B*B)
+		auto mc = LineFit(p);
+		double denom = sqrt(1+mc[1]*mc[1]);
+		double EnergySum=0;
+		for (auto i = p.begin(); i != p.end(); i++ ) 
+		{
+			if(i->energy>10)//(0.626*p.GetHeight() - 103.75 ))
+			{
+				if(mc[0]==0)
+				{
+					if(abs(i->y - (i->x*mc[1] + mc[2]))<=1.0*denom)
+					{
+						LineEnergy+=i->energy;
+						LineSize+=1;
+					}
+				}
+				else
+				{
+					if(abs(i->x - (i->y*mc[1] + mc[2]))<=1.0*denom)
+					{
+						LineEnergy+=i->energy;
+						LineSize+=1;
+					}
+				}
+				EnergySum+=i->energy;
+			}
+		}
+		return LineEnergy;
+	}
+	else
+	{
+		return 1;
+
+	}
+}
 
 int NumberOfEndPoints(particle const& p)
 {
@@ -404,63 +513,292 @@ int NumberOfEndPoints(particle const& p)
 	
 	int Neighbours[8];
 	int NumberOfNeighbours,NumberofTransitions;
+	bool IsEndPoint[p.GetSize()] = {false};
+	bool AlreadyNextToEndPoint;
 	for (auto i=p.begin(); i != p.end(); i++ ) 
-	{
-		for(int ii=0;ii<8;ii++) Neighbours[ii] = 0;
-		NumberOfNeighbours=0;
-		for (auto j=p.begin(); j != p.end(); j++ ) 
+	{	
+		if( i->energy >= 5)//(i->energy) >= 5)
 		{
-			if(( (i->x) == j->x) & ((i->y+1) == j->y))
+			for(int ii=0;ii<8;ii++) Neighbours[ii] = 0;
+			NumberOfNeighbours=0;
+			AlreadyNextToEndPoint=false;
+			int jIteratorPosition=0;
+			for (auto j=p.begin(); j != p.end(); j++, jIteratorPosition++) 
 			{
-				Neighbours[0]=1;
-				NumberOfNeighbours++;
-			}
-			
-			if(( (i->x) == j->x+1) & ((i->y+1) == j->y))
-			{
-				Neighbours[1]=1;
-				NumberOfNeighbours++;
-			}
+				if( j->energy >= 5 )//(i->energy) >= 5)
+				{
+					if(( (i->x) == j->x) & ((i->y+1) == j->y))
+					{
+						if(IsEndPoint[jIteratorPosition])
+							AlreadyNextToEndPoint=true;
+						Neighbours[0]=1;
+						NumberOfNeighbours++;
+					}
+					
+					else if(( (i->x+1) == j->x) & ((i->y+1) == j->y))
+					{
+						if(IsEndPoint[jIteratorPosition])
+							AlreadyNextToEndPoint=true;
+						Neighbours[1]=1;
+						NumberOfNeighbours++;
+					}
 
-			if(( (i->x) == j->x+1) & ((i->y) == j->y))
-			{
-				Neighbours[2]=1;
-				NumberOfNeighbours++;
+					else if(( (i->x+1) == j->x) & ((i->y) == j->y))
+					{
+						if(IsEndPoint[jIteratorPosition])
+							AlreadyNextToEndPoint=true;
+						Neighbours[2]=1;
+						NumberOfNeighbours++;
+					}
+					else if(( (i->x+1) == j->x) & ((i->y-1) == j->y))
+					{
+						if(IsEndPoint[jIteratorPosition])
+							AlreadyNextToEndPoint=true;
+						Neighbours[3]=1;
+						NumberOfNeighbours++;
+					}
+					else if(( (i->x) == j->x) & ((i->y-1) == j->y))
+					{
+						if(IsEndPoint[jIteratorPosition])
+							AlreadyNextToEndPoint=true;
+						Neighbours[4]=1;
+						NumberOfNeighbours++;
+					}
+					else if(( (i->x-1) == j->x) & ((i->y-1) == j->y))
+					{
+						if(IsEndPoint[jIteratorPosition])
+							AlreadyNextToEndPoint=true;
+						Neighbours[5]=1;
+						NumberOfNeighbours++;
+					}
+					else if(( (i->x-1) == j->x) & ((i->y) == j->y))
+					{
+						if(IsEndPoint[jIteratorPosition])
+							AlreadyNextToEndPoint=true;
+						Neighbours[6]=1;
+						NumberOfNeighbours++;
+					}
+					else if(( (i->x-1) == j->x) & ((i->y+1) == j->y))
+					{
+						if(IsEndPoint[jIteratorPosition])
+							AlreadyNextToEndPoint=true;
+						Neighbours[7]=1;
+						NumberOfNeighbours++;
+					}
+				}
 			}
-			if(( (i->x) == j->x+1) & ((i->y-1) == j->y))
+		
+		
+			NumberofTransitions = 0;
+			for(int ii=0;ii<7;ii++)
+				NumberofTransitions += static_cast<int>((Neighbours[ii+1] -Neighbours[ii])>0);
+			NumberofTransitions += static_cast<int>((Neighbours[0] -Neighbours[7])>0);
+			if((NumberofTransitions==1) & (NumberOfNeighbours<=3))
 			{
-				Neighbours[3]=1;
-				NumberOfNeighbours++;
-			}
-			if(( (i->x) == j->x) & ((i->y-1) == j->y))
-			{
-				Neighbours[4]=1;
-				NumberOfNeighbours++;
-			}
-			if(( (i->x) == j->x-1) & ((i->y-1) == j->y))
-			{
-				Neighbours[5]=1;
-				NumberOfNeighbours++;
-			}
-			if(( (i->x) == j->x-1) & ((i->y) == j->y))
-			{
-				Neighbours[6]=1;
-				NumberOfNeighbours++;
-			}
-			if(( (i->x) == j->x-1) & ((i->y+1) == j->y))
-			{
-				Neighbours[7]=1;
-				NumberOfNeighbours++;
+				IsEndPoint[distance(p.begin(), i)] = true;
+				if(AlreadyNextToEndPoint==false)
+					EndPointNumber++;
 			}
 		}
-		
-		NumberofTransitions = 0;
-		for(int ii=0;ii<7;ii++)
-			NumberofTransitions += static_cast<int>((Neighbours[ii+1] -Neighbours[ii])>0);
-		
-		if((NumberofTransitions<=1) & (NumberOfNeighbours<=3))
-			EndPointNumber++;
 	}
 	return  EndPointNumber;
 }
+
+double MedianEnergy(particle const& p)
+{
+	double MedianPosition = p.GetSize()/2.0;
+	vector<double> EnergyValues;
+	for (auto j=p.begin(); j != p.end(); j++) 
+	{
+		EnergyValues.push_back(j->energy);
+	}
+	sort(EnergyValues.begin(), EnergyValues.end());
+	
+	if( fmod(MedianPosition,2) !=0)
+		return (EnergyValues[static_cast<int>(MedianPosition-0.5)] + EnergyValues[static_cast<int>(MedianPosition+0.5)])/2;
+	else 
+		return EnergyValues[static_cast<int>(MedianPosition)];
+}
+
+double LineProjectionGradient(particle const& p)
+{
+	
+	if(p.GetSize()>2)
+	{
+		auto mc = LineFit(p);
+		double denom = 1.0/sqrt(1+mc[1]*mc[1]);
+		
+		particle LineProjected;
+		for (auto i = p.begin(); i != p.end(); i++ ) 
+		{
+			if((i->energy>10))// & (i->energy>(0.626*p.GetHeight() - 103.75 )))
+			{
+				if(mc[0]==0)
+				{
+					double distance = (i->y - (i->x*mc[1] + mc[2]))*denom;
+					double proj_x = i->x - distance * denom;
+					double proj_y = i->y - distance * mc[1] * denom;
+					LineProjected.Insert(PixelHit{sqrt(proj_x*proj_x + proj_y*proj_y),0, i->time, i->energy});
+				}
+				else
+				{
+					double distance = (i->x - (i->y*mc[1] + mc[2]))*denom;
+					double proj_y = i->y - distance * denom;
+					double proj_x = i->x - distance * mc[1] * denom;
+					LineProjected.Insert(PixelHit{sqrt(proj_x*proj_x + proj_y*proj_y),0, i->time, i->energy});
+				}
+			}
+		}
+		double meanx=0, meany=0, meanxy=0, meany2=0;
+		double vary;
+		for (auto i = LineProjected.begin(); i != LineProjected.end(); i++ ) 
+		{
+			meanx  += i->x*i->x;
+			meany  += i->energy;
+			meanxy += i->x*i->energy;
+			meany2 += i->energy*i->energy;
+		}
+		vary = meany2 - meany*meany;
+		return abs( (meanxy - meany*meanx)/vary );
+	}
+	else if(p.GetSize()==2)
+	{
+		return (p.begin()->energy + (p.begin()+1)->energy)/ sqrt(pow(p.begin()->x - (p.begin()+1)->x,2) + pow(p.begin()->y + (p.begin()+1)->y,2));
+
+	}
+	else
+	{
+		return 0;
+
+	}
+}
+
+
+double HaloDistance(particle const& p)
+{
+	if(p.GetSize()>2)
+	{
+		double MeanDistance = 0;
+		// implementing d = |Ay + Bx + C|/sqrt(A*A+B*B)
+		auto mc = LineFit(p);
+		double denom = sqrt(1+mc[1]*mc[1]);
+		double EnergySum=0;
+		for (auto i = p.begin(); i != p.end(); i++ ) 
+		{
+			if((i->energy>10)& ( (i->time - p.GetMinToA())>2))// & (i->energy>(0.626*p.GetHeight() - 103.75 )))
+			{
+				double d;
+				if(mc[0]==0)
+					d = abs(i->y - (i->x*mc[1] + mc[2]))/denom;
+				else
+					d = abs(i->x - (i->y*mc[1] + mc[2]))/denom;
+				if(d>=2.0)
+				{
+					MeanDistance += d*(i->time - p.GetMinToA());
+					EnergySum += i->time - p.GetMinToA();
+				}
+			}
+		}
+		MeanDistance /= EnergySum;
+		return MeanDistance;
+	}
+	else
+	{
+		return 0;
+
+	}
+}
+
+bool ContainsInner8FoldPixel(particle const& p)
+{
+	int NumberOfNeighbours;
+	bool ContainsCube=false;
+	for (auto i=p.begin(); i != p.end(); i++ ) 
+	{
+		NumberOfNeighbours=0;
+		for (auto j=p.begin(); j != p.end(); j++) 
+		{
+			if(( (i->x) == j->x) & ((i->y+1) == j->y))
+			{
+				NumberOfNeighbours++;
+			}
+			
+			else if(( (i->x+1) == j->x) & ((i->y+1) == j->y))
+			{
+				NumberOfNeighbours++;
+			}
+
+			else if(( (i->x+1) == j->x) & ((i->y) == j->y))
+			{
+				NumberOfNeighbours++;
+			}
+			else if(( (i->x+1) == j->x) & ((i->y-1) == j->y))
+			{
+				NumberOfNeighbours++;
+			}
+			else if(( (i->x) == j->x) & ((i->y-1) == j->y))
+			{
+				NumberOfNeighbours++;
+			}
+			else if(( (i->x-1) == j->x) & ((i->y-1) == j->y))
+			{
+				NumberOfNeighbours++;
+			}
+			else if(( (i->x-1) == j->x) & ((i->y) == j->y))
+			{
+				NumberOfNeighbours++;
+			}
+			else if(( (i->x-1) == j->x) & ((i->y+1) == j->y))
+			{
+				NumberOfNeighbours++;
+			}
+		}
+		if(NumberOfNeighbours==8)
+		{
+			ContainsCube=true;
+			break;
+		}
+		
+	}
+	return  ContainsCube;
+}
+
+bool ContainsInner4FoldPixel(particle const& p)
+{
+	int NumberOfNeighbours;
+	bool ContainsCross=false;
+	for (auto i=p.begin(); i != p.end(); i++ ) 
+	{
+		NumberOfNeighbours=0;
+		for (auto j=p.begin(); j != p.end(); j++) 
+		{
+			if(( (i->x) == j->x) & ((i->y+1) == j->y))
+			{
+				NumberOfNeighbours++;
+			}
+			else if(( (i->x+1) == j->x) & ((i->y) == j->y))
+			{
+				NumberOfNeighbours++;
+			}
+			else if(( (i->x) == j->x) & ((i->y-1) == j->y))
+			{
+				NumberOfNeighbours++;
+			}
+			else if(( (i->x-1) == j->x) & ((i->y) == j->y))
+			{
+				NumberOfNeighbours++;
+			}
+		}
+		if(NumberOfNeighbours==4)
+		{
+			ContainsCross=true;
+			break;
+		}
+		
+	}
+	return  ContainsCross;
+}
+
+
+
 

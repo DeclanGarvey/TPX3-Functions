@@ -13,10 +13,11 @@ using namespace std;
 
 //double d=0.05; //Thickness of detector in cm used in all theta 
 double UD=80; //Deplection across detector used in the "theta_line_fit_method"
-double mu=450;//Hole mobility in silicon used in the "theta_line_fit_method"
+double mu=48000000000;//Hole mobility in silicon used in the "theta_line_fit_method"
+double UB=230;
 
-double SkelParameters[2] = {0,10};
-
+//double SkelParameters[2] = {0.626,-103.25};
+double SkelParameters[2] = {0.025,5.0};
 /*
 Takes a particle as input and returns the skeletonised particle.
 */
@@ -145,6 +146,7 @@ double ThetaMinMax(particle const& p, double d)
 /*
 Calculates an approximation of theta by using drift time equation to reconstruct the 3D path of radiation from which a line is fitted and theta value determined.
 */
+
 double ThetaLineFit(particle const& p, double d)
 {
 	if(p.GetSize()>=2)
@@ -154,6 +156,7 @@ double ThetaLineFit(particle const& p, double d)
 		//Original equation: ( (d*(UB+UD))/(2*UD) ) * (1 - exp(-2*UD*mu*((i->second).time - p.get_toa())*1e-9 / (d*d))) 
 		//it was found to be more accurate to apply the normalisation factor which assumes the radiation travels completely through the detector
 		double normalisation_factor = d / (p.GetMaxToA()-p.GetMinToA());//(1 - exp(-2*UD*mu*(p.GetMaxToA() - p.GetMinToA())*1e-9 / (d*d)));
+		
 		for (auto i = p.begin(); i != p.end(); i++ ) 
 		{
 			double x = normalisation_factor * (i->time-p.GetMinToA());//(1 - exp(-2*UD*mu*(i->time - p.GetMinToA())*1e-9 / (d*d)));
@@ -173,6 +176,66 @@ double ThetaLineFit(particle const& p, double d)
 		return 0;
 	}
 }
+/*
+{
+	if(p.GetSize()>2)
+	{
+		auto mc = LineFit(p);
+		double denom = 1.0/sqrt(1+mc[1]*mc[1]);
+		
+		particle LineProjected;
+		double alpha = log(1-d)/(p.GetMaxToA()-p.GetMinToA());
+		for (auto i = p.begin(); i != p.end(); i++ ) 
+		{
+			if( i->energy>(0.626*p.GetHeight() - 103.75 ))//(i->energy>10))// &
+			{
+				if(mc[0]==0)
+				{
+					double distance = (i->y - (i->x*mc[1] + mc[2]))*denom;
+					double proj_x = i->x - distance * denom;
+					double proj_y = i->y - distance * mc[1] * denom - mc[2];
+					LineProjected.Insert(PixelHit{sqrt(proj_x*proj_x + proj_y*proj_y),0,(1 - exp(alpha*(i->time-p.GetMinToA()))), i->energy});
+				}
+				else
+				{
+					double distance = (i->x - (i->y*mc[1] + mc[2]))*denom;
+					double proj_y = i->y - distance * denom;
+					double proj_x = i->x - distance * mc[1] * denom - mc[2];
+					LineProjected.Insert(PixelHit{sqrt(proj_x*proj_x + proj_y*proj_y),0, (1 - exp(alpha*(i->time-p.GetMinToA()))), i->energy});
+				}
+			}
+		}
+		//double MeanTime=0;
+		//for (auto i = LineProjected.begin(); i != LineProjected.end(); i++ ) 
+		//	MeanTime += i->time*i->energy/LineProjected.GetEnergy();
+		double meanx=0, meany=0, meanxy=0, meanx2=0,meany2=0;
+		//double normalisation_factor = (d) / (LineProjected.GetMaxToA()-LineProjected.GetMinToA());
+		//cout<<LineProjected.GetMaxToA()<<" "<<LineProjected.GetMinToA()<<endl;
+		for (auto i = LineProjected.begin(); i != LineProjected.end(); i++ ) 
+		{
+			double x =  (i->time - LineProjected.GetMinToA());
+			double y = i->x*0.0055;//Distance(p.GetMinToAPixel(), *i);
+			
+			double e_ratio = (i->energy)/LineProjected.GetEnergy();
+			meanx  += x*e_ratio;
+			meany  += y*e_ratio;
+			meanxy += x*y*e_ratio;
+			meanx2 += x*x*e_ratio;
+			meany2 += y*y*e_ratio;
+		}
+		return atan(abs((meanxy - meanx*meany)/(meanx2 - meanx*meanx)));
+	}
+	else if(p.GetSize()==2)
+	{
+		return 0;
+
+	}
+	else
+	{
+		return 0;
+
+	}
+}*/
 
 /*
 Calculates whether correction factors are neccessary in the line fit phi method.
@@ -303,10 +366,10 @@ double PhiLineFit(particle const& p)
 	
 	double e_ratio, varx, vary, covxy;
 	double meanx=0, meany=0, meanxy=0, meanx2=0,meany2=0;
-	
-	for (auto i=p.begin(); i != p.end(); i++ ) 
+	auto skel = Skeletonise(p,SkelParameters[0],SkelParameters[1]);
+	for (auto i=skel.begin(); i != skel.end(); i++ ) 
 	{
-		e_ratio = (i->energy)/p.GetEnergy();
+		e_ratio = (i->time)/skel.GetTimeSum();
 		meanx  += i->x*e_ratio;
 		meany  += i->y*e_ratio;
 		meanxy += i->x*i->y*e_ratio;
@@ -348,19 +411,6 @@ double PhiLineFit(particle const& p)
 	}
 	
 	angle = atan2(bplus,aplus);
-	/*if(fxy.first & fxy.second)
-		if(angle>=M_PI-1)
-			angle = 2*M_PI - angle;
-	if(fxy.first==false & fxy.second==false)
-		if(angle<=M_PI_2+1)
-			angle += M_PI;
-	if(fxy.first & fxy.second==false)
-	{
-		if(angle<=M_PI_2+1)
-			angle += M_PI;//angle+=3*M_PI_2;
-		if(angle<=M_PI+1)
-			angle += M_PI;
-	}*/
 	if(angle<0)
 		angle+=M_PI;
 	
@@ -382,57 +432,6 @@ double PhiLineFit(particle const& p)
 		
 	}
 	return angle;
-	/*else if(fxy.second)
-		if(angle>M_PI)
-			return angle-M_PI;
-		else 
-			return angle;
-	else 
-		if(angle<M_PI)
-			return angle+M_PI;
-		else
-			return angle;*/
-	return 0;//angle;
-		//else
-		//	return 0;}
-		//if(angle<M_PI)
-		//	angle+=M_PI;
-	/*if(fxy.first & fxy.second)
-		if(angle<0)
-			return angle+7*M_PI_4;
-		else if(angle>M_PI_2)
-			return angle - M_PI;
-		else 
-			return angle;
-	
-	//else if((fxy.first) & (fxy.second==false))
-		//return angle;
-		if(angle<0)
-			return -angle;
-		else if(angle<M_PI_2)
-			return 2*M_PI - angle;
-		else
-			return angle;
-		else if(angle>M_PI)
-			return angle;
-		else if(angle<M_PI_2)
-			return angle + 7*M_PI_4;
-		else
-			return angle + M_PI;*/
-	//else
-	//	return 0;
-	/*else if((fxy.first==false) & (fxy.second))
-		if(angle<0)
-			return M_PI + angle;
-		else
-			return angle;
-	else //if((fxy.first==false) & (fxy.second==false))
-		if(angle<0)
-			return angle + 3*M_PI_2;
-		else
-			return angle + M_PI;*/
-	//double angle = acos(bplus);
-	
 }
 
 /*
@@ -457,6 +456,7 @@ double PhiTimeWeighted(particle const& p)
 		}
 		for (auto i=skel.begin(); i != skel.end(); i++ ) 
 		{
+		
 			double weight = (i->time - skel.GetMinToA())/(TimeSum);
 			entry.x += i->x*weight;
 			entry.y += i->y*weight;
@@ -466,7 +466,6 @@ double PhiTimeWeighted(particle const& p)
 			exit.x += i->x*weight;
 			exit.y += i->y*weight;
 			exit.time+=i->time*weight;
-			
 		}
 		if(entry==exit)
 			return -1;

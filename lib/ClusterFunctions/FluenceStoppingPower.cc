@@ -52,8 +52,8 @@ TH1D* GetStoppingPowerFluenceCurve(const string& ipFileName, int ipFileType, dou
 {
 	TH1D* Curve = new TH1D(Name.c_str(), Title.c_str(), NoBins, XLow, XHigh);
 	particle p;
-	auto reader = GetFileReader(ipFileName,ipFileType);
-	while(reader->AssignParticle(p))
+	ParticleFileReader reader = GetFileReader(ipFileName,ipFileType);
+	while(reader.AssignParticle(p))
 	{
 		double theta = ThetaImprovedLLM(p,d);
 		double sp = StoppingPower(p.GetEnergy(), theta, d); 
@@ -63,6 +63,7 @@ TH1D* GetStoppingPowerFluenceCurve(const string& ipFileName, int ipFileType, dou
 			Curve->Fill(sp, weight);
 		}
 	}
+	reader.Close();
 	return Curve;
 }
 
@@ -82,8 +83,10 @@ void SubtractCurves(TH1D* Curve1, TH1D* Curve2)
 
 void PrintHistogram(FILE* opFile, TH1D* Curve)
 {
+	
 	fprintf(opFile, "%lf", Curve->GetBinContent(1));
 	int NBins=Curve->GetNbinsX();
+	cout<<"Number of Bins:"<<NBins<<endl;
 	for(int i=2; i<=NBins;i++)
 		fprintf(opFile, ",%lf", Curve->GetBinContent(i));
 	fprintf(opFile, "\n");

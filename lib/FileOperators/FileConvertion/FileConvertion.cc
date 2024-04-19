@@ -17,13 +17,13 @@ using namespace std;
 
 #include "FileConvertion.h"
 
-void WriteParticleInformation(ParticleGeneratorBaseClass* reader, ParticleFileWriter* writer, bool RemoveEdges)
+void WriteParticleInformation(ParticleGeneratorBaseClass reader, ParticleFileWriter writer, bool RemoveEdges)
 {
 	particle p;
-	while(reader->AssignParticle(p))
+	while(reader.AssignParticle(p))
 	{
 		if((p.IsEdge()==false) | (RemoveEdges==false))
-			writer->AddParticle(p);
+			writer.AddParticle(p);
 		
 	}
 }
@@ -31,57 +31,52 @@ void WriteParticleInformation(ParticleGeneratorBaseClass* reader, ParticleFileWr
 void ConvertTo(const string& ipFileName, const string& opFileName, int ipFileType, int opFileType, double DetectorThickness, bool RemoveEdges,
 		 const string& ModelPath, const string& SelectionConfigFilePath)
 {
-	ParticleFileReader* reader = GetFileReader(ipFileName, ipFileType);
-	ParticleFileFilter* filteredreader = new ParticleFileFilter(reader, SelectionConfigFilePath);
+	ParticleFileReader reader = GetFileReader(ipFileName, ipFileType);
+	ParticleFileFilter filteredreader(&reader, SelectionConfigFilePath);
 	
-	ParticleFileWriter* writer = GetFileWriter(opFileName, opFileType, DetectorThickness, ModelPath);
+	ParticleFileWriter writer = GetFileWriter(opFileName, opFileType, DetectorThickness, ModelPath);
 	
 	WriteParticleInformation(filteredreader, writer, RemoveEdges);
 	
-	reader->Close();
-	writer->Close();
+	//reader.Close();
+	//writer.Close();
 }
 
 void ConvertDirectoryTo(const string& ipDirectoryName, const string& opDirectoryName, int ipFileType, int opFileType, double DetectorThickness, bool RemoveEdges,
 		 	const string& ModelPath, const string& SelectionConfigFilePath)
 {
 	string ipFileName;
-	ParticleFileWriter* writer = GetEmptyFileWriter(opFileType, DetectorThickness, ModelPath);
-	ParticleFileReader* reader = GetEmptyFileReader(ipFileType);
-	ParticleFileFilter* filteredreader = new ParticleFileFilter(reader, SelectionConfigFilePath);
+	ParticleFileWriter writer = GetEmptyFileWriter(opFileType, DetectorThickness, ModelPath);
+	ParticleFileReader reader = GetEmptyFileReader(ipFileType);
+	ParticleFileFilter filteredreader(&reader, SelectionConfigFilePath);
 	
-	DirectoryReader* dir = new DirectoryReader(ipDirectoryName);
-	while(dir->AssignNextFile(ipFileName))
+	DirectoryReader dir(ipDirectoryName);
+	while(dir.AssignNextFile(ipFileName))
 	{
 		if( ((ipFileType!=-1) & (GetFileType(ipFileName)==ipFileType)) | 
 			((ipFileType==-1) & (GetFileType(ipFileName)>=0) & (GetFileType(ipFileName)<=4)) |
-			((ipFileType==3) & (GetFileType(ipFileName)==0)) // Deals with special Case of SATRAM file type 
+			((ipFileType==3) & (GetFileType(ipFileName)==0)) | ((ipFileType==10) & (GetFileType(ipFileName)==0)) // Deals with special Case of SATRAM file type 
 			)
 		{
 			if( (opFileType == GetFileType(ipFileName)) &
 				experimental::filesystem::equivalent(ipDirectoryName, opDirectoryName))
-				{
-					cout<<"Processing: "<<ipFileName <<endl;
-					string NewipFileName = RemoveExtension(ipFileName)+"_new";
-					cout<<" =>Altering output file name to \'"+NewipFileName+"\' as to avoid overwriting itself."<<endl;
-					
-					reader->UpdateFileInput(ipDirectoryName +"/"+ ipFileName);
-					writer->UpdateFileOutput(opDirectoryName+"/"+RemoveExtension(NewipFileName));
-					
-					WriteParticleInformation(filteredreader, writer, RemoveEdges);
-					
-					reader->Close();
-					writer->Close();
-				}
+			{
+				cout<<"Processing: "<<ipFileName <<endl;
+				string NewipFileName = RemoveExtension(ipFileName)+"_new";
+				cout<<" =>Altering output file name to \'"+NewipFileName+"\' as to avoid overwriting itself."<<endl;
+				
+				reader.UpdateFileInput(ipDirectoryName +"/"+ ipFileName);
+				writer.UpdateFileOutput(opDirectoryName+"/"+RemoveExtension(NewipFileName));
+				
+				WriteParticleInformation(filteredreader, writer, RemoveEdges);
+			}
 			else
 			{
 				cout<<"Processing: "<<ipFileName<<endl;
-				reader->UpdateFileInput(ipDirectoryName +"/"+ ipFileName);
-				writer->UpdateFileOutput(opDirectoryName+"/"+RemoveExtension(ipFileName));
+				reader.UpdateFileInput(ipDirectoryName +"/"+ ipFileName);
+				writer.UpdateFileOutput(opDirectoryName+"/"+RemoveExtension(ipFileName));
 				
 				WriteParticleInformation(filteredreader, writer, RemoveEdges);
-				reader->Close();
-				writer->Close();
 			}
 		}
 	}

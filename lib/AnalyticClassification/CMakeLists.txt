@@ -8,4 +8,4 @@
 add_library(AnalyticClassification MorphologicalClassification.cc)
 target_include_directories(AnalyticClassification PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(AnalyticClassification PRIVATE ParticleCluster ClusterFunctions)
+target_link_libraries(AnalyticClassification PRIVATE ParticleCluster ClusterFunctions AngleProject)

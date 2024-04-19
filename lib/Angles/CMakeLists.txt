@@ -14,15 +14,11 @@ target_link_libraries(AngleProject PRIVATE ParticleFileReaders)
 find_library(ONNX_NAME onnxruntime PATHS /usr/local/lib)
 find_path(ONNX_INCLUDE_DIR onnxruntime)
 if(ONNX_INCLUDE_DIR)
-	message("-- onnxruntime - found")
+	#message("-- onnxruntime - found")
 	add_library(MLAngleProject RandomForrestTheta.cc)
 	
-	
-	target_link_libraries(MLAngleProject PRIVATE onnxruntime)
-	
-	target_include_directories(MLAngleProject PUBLIC ${ONNX_INCLUDE_DIR}/onnxruntime)
 	target_include_directories(MLAngleProject PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-	
+	target_link_libraries(MLAngleProject PUBLIC GeneralisedONNXProject)
 	target_link_libraries(MLAngleProject PRIVATE ParticleCluster)
 	target_link_libraries(MLAngleProject PRIVATE ClusterFunctions)
 	

@@ -82,7 +82,8 @@ void particle::Clear()
 		phi=-1;
 		theta=-1;
 		StoppingPower=-1;
-		AcquisitionTime=0;
+		RegionID=-1;
+		AcquisitionTime=-1;
 	//}
 }
 vector<PixelHit>::const_iterator particle::begin() const 

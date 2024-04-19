@@ -1,35 +1,34 @@
 using namespace std;
-
-#include "TSystemDirectory.h"
-#include "TFile.h"
-
+#include <filesystem>
+#include <iostream>
 #include "DirectoryReaders.h"
 
 DirectoryReader::DirectoryReader(const string& ipDirectoryName)
 {
-	TSystemDirectory dir((ipDirectoryName).c_str(), (ipDirectoryName).c_str());
-	
-	FileList_ = dir.GetListOfFiles(); 
-	if (FileList_) 
+	ipDirectoryName_=ipDirectoryName;
+	FileExists = filesystem::exists(ipDirectoryName);
+	if (FileExists) 
+    	{
+    		DirectoryIterator_ =  filesystem::directory_iterator(ipDirectoryName_);
+    	}
+    	else
 	{
-		IsEmpty_=false;
-		Iterator_ = new TIter(FileList_);  
-	}else{
-		IsEmpty_=true;
-	}
+		std::cout << "Directory does not exist: " << ipDirectoryName << std::endl;
+    	}
+    	
 }
 bool DirectoryReader::AssignNextFile(string& FileName)
 {
 	do
 	{
-		if( (CurrentFile_=(TSystemFile*)Iterator_->operator()()) )
+		if(DirectoryIterator_!= filesystem::directory_iterator())
 		{
-				//cout<<FileName<<" "<<(FileName!=".") <<" "<<(FileName!="..")<<endl;
-				FileName = CurrentFile_->GetName();
+				CurrentFileEntry_ = *DirectoryIterator_;
+				FileName = CurrentFileEntry_.path().filename();
+				DirectoryIterator_++;
 		}
 		else
 		{
-			FileName.clear();
 			return false;
 		}
 	}
@@ -38,8 +37,8 @@ bool DirectoryReader::AssignNextFile(string& FileName)
 }
 void DirectoryReader::RestartIteration()
 {
-	if (FileList_) 
-		Iterator_ = new TIter(FileList_);  
+	if(FileExists)
+		DirectoryIterator_ =  filesystem::directory_iterator(ipDirectoryName_);
 }
 
 

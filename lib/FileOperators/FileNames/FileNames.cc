@@ -7,15 +7,15 @@ using namespace std;
 void ShowDataFileTypes()
 {
 	fprintf (stderr, "Possible Data File Types:\n\n");
-	fprintf (stderr, "0		: .root, Standard root file type'\n");
-	fprintf (stderr, "1		: _px.txt \n");
-	fprintf (stderr, "2		: _ang.txt \n");
-	fprintf (stderr, "3		: .root, SATRAM root file type',\n");
-	fprintf (stderr, "4		: _sim.txt \n");
-	fprintf (stderr, "5 	        : _feat.txt \n");
-	fprintf (stderr, "6		: _sp.txt \n");
-	fprintf (stderr, "7		: _sat.txt \n");
-	fprintf (stderr, "8		: _tracking.txt\n");
+	fprintf (stderr, "0	: .root, Standard root file type'\n");
+	fprintf (stderr, "1	: _px.txt \n");
+	fprintf (stderr, "2	: _ang.txt \n");
+	fprintf (stderr, "3	: .root, SATRAM root file type',\n");
+	fprintf (stderr, "4	: _sim.txt \n");
+	fprintf (stderr, "5	: _feat.txt \n");
+	fprintf (stderr, "6	: _sp.txt \n");
+	fprintf (stderr, "7	: _sat.txt \n");
+	fprintf (stderr, "8	: _tracking.txt\n");
 	fprintf (stderr, "\n\n");
 	exit (1);
 }

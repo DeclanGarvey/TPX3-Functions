@@ -25,8 +25,8 @@ class particle
 		double phi=-1;
 		double theta=-1;
 		double StoppingPower=-1;
-		double AcquisitionTime=0.0;
-		int RegionID=0.0;
+		double AcquisitionTime=-1;
+		int RegionID=-1;
 		double SatPosX=0;
 		double SatPosY=0;
 		double SatAltitude=0;

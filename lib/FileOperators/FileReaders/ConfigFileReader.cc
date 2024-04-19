@@ -59,15 +59,37 @@ const std::vector<string>& ConfigFileReader::GetCurrentVariableAsVector()
 		string buffer{""};
 		for(auto n : VariableValue)
 		{
-			if((n==',') & (n!=' ')) 
+			if((n!=',') & (n!=' ')) 
 				buffer+=n;
-			else if (((n == ',') | (n==' ')) & (buffer != "")) 
+			else if (((n == ',') | (n==' ')) & (buffer != ""))
 			{
 				VariableValueVector.push_back(buffer); 
 				buffer = ""; 
 			}
 		}
+		if(buffer != "")
+			VariableValueVector.push_back(buffer); 
 	}
 	return VariableValueVector;
 }
 
+const std::vector<string>& ConfigFileReader::GetCurrentVariableAsVector(char Seperator)
+{
+	if(VariableValueVector.empty())
+	{
+		string buffer{""};
+		for(auto n : VariableValue)
+		{
+			if(n!=Seperator) 
+				buffer+=n;
+			else if ((n == Seperator) & (buffer != "")) 
+			{
+				VariableValueVector.push_back(buffer); 
+				buffer = ""; 
+			}
+		}
+		if(buffer != "")
+			VariableValueVector.push_back(buffer); 
+	}
+	return VariableValueVector;
+}

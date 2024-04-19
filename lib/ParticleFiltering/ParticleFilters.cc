@@ -21,6 +21,10 @@ function<bool(particle& p)> GetFilter(const string& FilterName, const string& Fi
 		return CreateMinimumEnergyFilter(stod(FilterValue));
 	else if(FilterName=="MaximumEnergy")
 		return CreateMaximumEnergyFilter(stod(FilterValue));
+	else if(FilterName=="MinimumHeight")
+		return CreateMinimumHeightFilter(stod(FilterValue));
+	else if(FilterName=="MaximumHeight")
+		return CreateMaximumHeightFilter(stod(FilterValue));
 	else if(FilterName=="PrimaryEnergy")	
 		return CreatePrimaryEnergyFilter(stod(FilterValue));
 	else if(FilterName=="MinimumPrimaryEnergy")
@@ -47,11 +51,24 @@ function<bool(particle& p)> GetFilter(const string& FilterName, const string& Fi
 		return CreateMinimumEndPointsFilter(stoi(FilterValue));
 	else if(FilterName=="MaximumEndPoints")
 		return CreateMaximumEndPointsFilter(stoi(FilterValue));
-	else 
+	else if(FilterName=="RemoveMorphologicalClass")
+		return CreateMorphologicalClassRemovalFilter(stoi(FilterValue));
+	else if(FilterName=="RemoveLIPs")
 	{
-		cout<<"Warning: Unknown filter type found \'"<<FilterName<<"\' is being ommited along with value \'"<<FilterValue<<"\'."<<endl;
-		return [](const particle&) { return true; };
+		if((FilterValue=="True") | (FilterValue=="1"))
+			return CreateLIPsFilter(false);
 	}
+	else if(FilterName=="RemoveMIPs")
+	{
+		if((FilterValue=="True") | (FilterValue=="1"))
+			return CreateLIPsFilter(true);
+	}
+	else if(FilterName=="MaximumAcquisitionTime")
+	{
+		return CreateMaximumAcquisitionTimeFilter(stod(FilterValue));
+	}
+	cout<<"Warning: Unknown filter type found \'"<<FilterName<<"\' is being ommited along with value \'"<<FilterValue<<"\'."<<endl;
+	return [](const particle& p) { return true; };
 }
 
 function<bool(particle&)> CreateMinimumSizeFilter(int MinimumSize)
@@ -86,7 +103,21 @@ function<bool(particle&)> CreateMaximumEnergyFilter(double MaximumEnergy)
 		return p.GetEnergy()<=MaximumEnergy;
 	};
 }
+function<bool(particle&)> CreateMinimumHeightFilter(double MinimumHeight)
+{
+	return [MinimumHeight](particle& p)
+	{
+		return p.GetHeight()>=MinimumHeight;
+	};
+}
 
+function<bool(particle&)> CreateMaximumHeightFilter(double MaximumHeight)
+{
+	return [MaximumHeight](particle& p)
+	{
+		return p.GetHeight()<=MaximumHeight;
+	};
+}
 function<bool(particle&)> CreatePrimaryEnergyFilter(double PrimaryEnergy)
 {
 	return [PrimaryEnergy](particle& p)
@@ -207,7 +238,7 @@ function<bool(particle&)> CreateRegionIDFilter(int RegionID)
 {
 	return [RegionID](particle& p)
 	{
-		if((p.RegionID==-1) | (RegionID==-1))
+		if(RegionID==-1)
 			return true;
 		else
 			return p.RegionID==RegionID;
@@ -280,6 +311,33 @@ function<bool(particle&)> CreateMaximumEndPointsFilter(int MaximumEndPoints)
 		return NumberOfEndPoints(p)<=MaximumEndPoints;
 	};
 }
+
+function<bool(particle&)> CreateMorphologicalClassRemovalFilter(int MorphologicalClass)
+{
+	return [MorphologicalClass](particle& p)
+	{
+		if(p.MorphologicalClass==-1)
+			p.MorphologicalClass = GetMorphologicalClass(p);
+		return p.MorphologicalClass!=MorphologicalClass;
+	};
+}
+
+function<bool(particle&)> CreateLIPsFilter(bool KeepLIPs)
+{
+	return [KeepLIPs](particle& p)
+	{
+		return (p.GetEnergy()<= (p.GetSize()*17 + 500))==KeepLIPs;
+	};
+}
+
+function<bool(particle&)> CreateMaximumAcquisitionTimeFilter(double MaximumAcquisitionTime)
+{
+	return [MaximumAcquisitionTime] (particle &p)
+	{
+		return (p.AcquisitionTime <= MaximumAcquisitionTime);
+	};
+}
+
 
 
 

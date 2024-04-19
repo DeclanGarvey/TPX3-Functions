@@ -8,8 +8,10 @@ project(
   DESCRIPTION "Functions for TPX3 data manipulation and processing"
   LANGUAGES CXX)
 
+#set(CMAKE_BUILD_TYPE Debug)
+
 # Set standard build flags
-SET(CMAKE_CXX_FLAGS "-Werror -Wfatal-errors") # Enabled for debugging
+#SET(CMAKE_CXX_FLAGS "-Werror -Wfatal-errors -g") # Enabled for debugging
 SET(CMAKE_CXX_FLAGS  "-Wall")
 # The compiled library code is here
 add_subdirectory(src)

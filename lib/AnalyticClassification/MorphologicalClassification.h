@@ -10,7 +10,8 @@ namespace Dots
 }
 namespace SmallBlobs
 {
-	const int MaximumXYDimension=1;
+	const int MaximumSize=4;
+	const int MaximumDimension=1.0;
 }
 namespace HeavyBlobs
 {
@@ -29,8 +30,8 @@ namespace StraightTracks
 	const double MinimumLinearity = 0.9;
 	const int MinimumInLinePixels = 4;//Originally was 20 in line pixels
 }
-namespace CurlyTracks
+namespace ZeroIncidentParticles
 {
- 	const int MaximumSize=250;
- 	//const int MaximumNodes=10;
+ 	const int MinimumPrimarySize=5;
+ 	const int MaximumPrimaryDimension=2;
 }

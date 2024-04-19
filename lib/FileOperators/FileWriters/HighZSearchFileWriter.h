@@ -7,9 +7,6 @@ class RandomForrestTheta;
 
 class HighZSearchFileWriter : public ParticleFileWriter
 {
-	protected: 
-		FILE* opFile_=NULL;
-		double DetectorThickness_;
 	private: 
 		std::unique_ptr<RandomForrestTheta> ThetaModel;
 	public:
@@ -19,6 +16,4 @@ class HighZSearchFileWriter : public ParticleFileWriter
 		void UpdateFileOutput(const std::string& opFileName);
 		
 		bool AddParticle(particle const& p);
-		
-		void Close();
 };

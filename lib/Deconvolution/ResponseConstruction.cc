@@ -18,9 +18,7 @@ using namespace::std;
 
 void ConstructResponse(const string&  ipDirectory, const string&  opDirectory,  const string& ConfigurationDirectory, double DetectorThickness)
 {	
-	RooUnfoldResponseConstructorClass Constructor;
-	Constructor.SetResponseConstrutionParameters(ConfigurationDirectory);
-	Constructor.Initialise();
+	RooUnfoldResponseConstructorClass Constructor(ConfigurationDirectory);
 	
 	Constructor.AddFile(ipDirectory, DetectorThickness);
 	
@@ -33,9 +31,7 @@ void ConstructResponse(const string&  ipDirectory, const string&  opDirectory,  
 
 void ResponseConstructionFromDirectory(const string&  ipDirectory, const string&  opDirectory,  const string& ConfigurationDirectory, double DetectorThickness)
 {
-	RooUnfoldResponseConstructorClass Constructor;
-	Constructor.SetResponseConstrutionParameters(ConfigurationDirectory);
-	Constructor.Initialise();
+	RooUnfoldResponseConstructorClass Constructor(ConfigurationDirectory);
 	
 	DirectoryReader* dir = new DirectoryReader(ipDirectory);
 	string ParticleFileName;

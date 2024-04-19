@@ -18,6 +18,7 @@ class ConfigFileReader
 		const std::string& GetCurrentVariableName();
 		const std::string& GetCurrentVariableValue();
 		const std::vector<std::string>& GetCurrentVariableAsVector();
+		const std::vector<string>& GetCurrentVariableAsVector(char Seperator);
 		void Close() {ipFile.close();};
 };
 

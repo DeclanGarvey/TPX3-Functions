@@ -12,11 +12,11 @@ using namespace std;
 
 MLSpFileWriter::MLSpFileWriter(const string& opFileName, double DetectorThickness, const string& ModelPath) : SpFileWriter(opFileName, DetectorThickness)
 {	
-	ThetaModel = std::make_unique<RandomForrestTheta>(RandomForrestTheta(ModelPath));
+	ThetaModel = std::make_unique<RandomForrestTheta>(ModelPath);
 }
 MLSpFileWriter::MLSpFileWriter(double DetectorThickness, const string& ModelPath) : SpFileWriter(DetectorThickness)
 {	
-	ThetaModel = std::make_unique<RandomForrestTheta>(RandomForrestTheta(ModelPath));
+	ThetaModel = std::make_unique<RandomForrestTheta>(ModelPath);
 }
 
 bool MLSpFileWriter::AddParticle(particle const& p)
@@ -34,4 +34,3 @@ bool MLSpFileWriter::AddParticle(particle const& p)
 	else 
 		return false;
 }
-

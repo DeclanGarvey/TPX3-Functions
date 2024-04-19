@@ -21,11 +21,11 @@ void CalculateAngles(const string& ipFileName, const string& opFileName, int ipF
 	
 	particle p;	 		//empty particle class
 	double theta, phi;
-	ParticleFileReader* reader;
+	ParticleFileReader reader;
 	if(ipFileType==-1)
 		ipFileType = GetFileType(ipFileName);
 	reader = GetFileReader(ipFileName, ipFileType);
-	while(reader->AssignParticle(p))
+	while(reader.AssignParticle(p))
 	{	
 		if( (p.IsEmpty()==false) & ((p.IsEdge()==false) | (RemoveEdges==false)) )
 		{	

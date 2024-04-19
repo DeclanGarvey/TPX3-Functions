@@ -14,12 +14,12 @@ using namespace std;
 
 MLFieldTrackingFileWriter::MLFieldTrackingFileWriter(const string& opFileName, double DetectorThickness, const string& ModelPath) : FieldTrackingFileWriter(opFileName, DetectorThickness)
 {	
-	ThetaModel = std::make_unique<RandomForrestTheta>(RandomForrestTheta(ModelPath));
+	ThetaModel = std::make_unique<RandomForrestTheta>(ModelPath);
 }
 
 MLFieldTrackingFileWriter::MLFieldTrackingFileWriter(double DetectorThickness, const string& ModelPath) : FieldTrackingFileWriter(DetectorThickness)
 {	
-	ThetaModel = std::make_unique<RandomForrestTheta>(RandomForrestTheta(ModelPath));
+	ThetaModel = std::make_unique<RandomForrestTheta>(ModelPath);
 }
 bool MLFieldTrackingFileWriter::AddParticle(particle const& p)
 {
