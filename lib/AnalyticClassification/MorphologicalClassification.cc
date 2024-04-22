@@ -8,6 +8,8 @@ using namespace std;
 #include "AngleCalulationFunctions.h"
 #include "MorphologicalClassification.h"
 
+//This function takes in particle class and outputs the Morphological classification based on T. Holy et al. “Pattern recognition of tracks induced by individual quanta of ionizing radiation in Medipix2 silicon detector”. In: Nuclear Instruments and Methods in Physics Research Section A: Accelerators, Spectrometers, Detectors and Associated Equipment 591.1 (2008). 
+//Updates to acconunt for some speical case scenarios
 int GetMorphologicalClass(particle const& p)
 {
 	if(p.GetSize()>Dots::MaximumSize)
@@ -30,12 +32,11 @@ int GetMorphologicalClass(particle const& p)
 						if( (abs(PrimaryTrack.GetRightBottomMost().x- PrimaryTrack.GetLeftTopMost().x)<=ZeroIncidentParticles::MaximumPrimaryDimension)
 							 & (abs(PrimaryTrack.GetTopLeftMost().y - PrimaryTrack.GetBottomRightMost().y)<=ZeroIncidentParticles::MaximumPrimaryDimension)
 							 & (ContainsInner4FoldPixel(PrimaryTrack)) )
-							return 6; //Accounting for misclassification of volcano affect
+							return 6; //Lowly Ionsiing particles at low angle sof incidence
 						else if(ContainsInner8FoldPixel(PrimaryTrack))
-							return 7;
+							return 7; //Medium->Highly ionising particles at low angles of incidence
 						else
 						{
-							//cout<<abs(p.GetRightBottomMost().x- p.GetLeftTopMost().x)<< " "<<abs(p.GetTopLeftMost().y - p.GetBottomRightMost().y)<<endl;
 							return 5; //Curly Tracks
 						}
 					}

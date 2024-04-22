@@ -11,15 +11,22 @@
 #include <AngleCalulationFunctions.h>
 using namespace std;
 
+/*
+Angle calculation functions developed for Improved algorithms for determination of particle directions in space with Timepix3, Journal of Instrumentation https://arxiv.org/pdf/2111.00624.pdf
+
+*/
+
 //double d=0.05; //Thickness of detector in cm used in all theta 
 double UD=80; //Deplection across detector used in the "theta_line_fit_method"
 double mu=48000000000;//Hole mobility in silicon used in the "theta_line_fit_method"
-double UB=230;
+double UB=230; //One typical bias voltage utilised in 500um Timepix3
 
-//double SkelParameters[2] = {0.626,-103.25};
+//Typical optimal parameters found through a grid search to remove cluster electron cloud returning  
+//Opitmisation based on acuaracy, stability and simulation aggrement
 double SkelParameters[2] = {0.025,5.0};
+
 /*
-Takes a particle as input and returns the skeletonised particle.
+Takes a particle as input and returns the skeletonised particle. Returning only pixels satisfying ToT > a*(Height) + b
 */
 particle Skeletonise(particle const& p,double a,double b)
 {
@@ -31,6 +38,7 @@ particle Skeletonise(particle const& p,double a,double b)
 	}
 	return skel;
 }
+
 /*
 Converts range of incident from 0 --> (pi/2)
 Neccessary as algorithm in this project require input [0,pi/2], also this is the range of physically indiguishable in Timepix3
@@ -176,69 +184,11 @@ double ThetaLineFit(particle const& p, double d)
 		return 0;
 	}
 }
-/*
-{
-	if(p.GetSize()>2)
-	{
-		auto mc = LineFit(p);
-		double denom = 1.0/sqrt(1+mc[1]*mc[1]);
-		
-		particle LineProjected;
-		double alpha = log(1-d)/(p.GetMaxToA()-p.GetMinToA());
-		for (auto i = p.begin(); i != p.end(); i++ ) 
-		{
-			if( i->energy>(0.626*p.GetHeight() - 103.75 ))//(i->energy>10))// &
-			{
-				if(mc[0]==0)
-				{
-					double distance = (i->y - (i->x*mc[1] + mc[2]))*denom;
-					double proj_x = i->x - distance * denom;
-					double proj_y = i->y - distance * mc[1] * denom - mc[2];
-					LineProjected.Insert(PixelHit{sqrt(proj_x*proj_x + proj_y*proj_y),0,(1 - exp(alpha*(i->time-p.GetMinToA()))), i->energy});
-				}
-				else
-				{
-					double distance = (i->x - (i->y*mc[1] + mc[2]))*denom;
-					double proj_y = i->y - distance * denom;
-					double proj_x = i->x - distance * mc[1] * denom - mc[2];
-					LineProjected.Insert(PixelHit{sqrt(proj_x*proj_x + proj_y*proj_y),0, (1 - exp(alpha*(i->time-p.GetMinToA()))), i->energy});
-				}
-			}
-		}
-		//double MeanTime=0;
-		//for (auto i = LineProjected.begin(); i != LineProjected.end(); i++ ) 
-		//	MeanTime += i->time*i->energy/LineProjected.GetEnergy();
-		double meanx=0, meany=0, meanxy=0, meanx2=0,meany2=0;
-		//double normalisation_factor = (d) / (LineProjected.GetMaxToA()-LineProjected.GetMinToA());
-		//cout<<LineProjected.GetMaxToA()<<" "<<LineProjected.GetMinToA()<<endl;
-		for (auto i = LineProjected.begin(); i != LineProjected.end(); i++ ) 
-		{
-			double x =  (i->time - LineProjected.GetMinToA());
-			double y = i->x*0.0055;//Distance(p.GetMinToAPixel(), *i);
-			
-			double e_ratio = (i->energy)/LineProjected.GetEnergy();
-			meanx  += x*e_ratio;
-			meany  += y*e_ratio;
-			meanxy += x*y*e_ratio;
-			meanx2 += x*x*e_ratio;
-			meany2 += y*y*e_ratio;
-		}
-		return atan(abs((meanxy - meanx*meany)/(meanx2 - meanx*meanx)));
-	}
-	else if(p.GetSize()==2)
-	{
-		return 0;
-
-	}
-	else
-	{
-		return 0;
-
-	}
-}*/
 
 /*
-Calculates whether correction factors are neccessary in the line fit phi method.
+Calculates based on the ToA gradient whether or not the Phi calculation needs to pi in the x or y direction
+
+essentially the utilising the the affect drift time has on ToA
 */
 pair<bool,bool> Flipxy(particle const& p)
 {
@@ -289,20 +239,6 @@ double TwoPointPhi(PixelHit const& p1, PixelHit const& p2)
 	double phi = atan2(deltax, deltay);
 	if(phi<0)
 		phi += 2*M_PI;
-	//double phi = atan2(abs(deltay)/abs(deltax));
-	
-	/*if((deltax<0.0) & (deltay>0.0))
-		phi = M_PI - phi; //(2*3.14159) - phi;
-	else if((deltay<0.0)&(deltax<0.0))
-	{
-		phi =  M_PI + phi;
-	}
-	else if((deltay<0.0) & (deltax>0.0))
-	{
-		phi =  (2*M_PI) - phi;
-	}*/
-	//if(phi<0)
-	//	phi += 2*M_PI;
 	return phi;
 }
 
@@ -324,6 +260,7 @@ double PhiLLMHori(particle const& p)
 	else 
 		return TwoPointPhi(p.GetRightBottomMost(), p.GetLeftTopMost());
 }
+
 /*
 Calculates an approximation of the phi incident angle by first determining if the cluster is predominantly (i) horizontal or (ii) vertical then 
 in each case determines the phi value by, 

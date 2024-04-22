@@ -3,10 +3,8 @@ using namespace std;
 
 #include "FileNames.h"
 #include "ParticleFileWriters.h"
-#include "MLStoppingPowerFileWriter.h"
 #include "RandomForrestTheta.h"
-#include "MLFieldTrackingFileWriter.h"
-#include "HighZSearchFileWriter.h"
+#include "MLParticleFileWriters.h"
 
 #include "FileWriterFetcher.h"
 
@@ -21,19 +19,16 @@ ParticleFileWriter GetFileWriter(const string& opFileName, int FileType, double 
 			case 1:
 				return PxFileWriter(opFileName, DetectorThickness);
 				break;
-			case 2:
-				return AngFileWriter(opFileName, DetectorThickness);
-				break;
-			case 5: 
+			case 4: 
 				return FeatFileWriter(opFileName, DetectorThickness);
 				break;
-			case 6:
+			case 5:
 				return SpFileWriter(opFileName, DetectorThickness);
 				break;
-			case 7:
+			case 6:
 				return SatFileWriter(opFileName, DetectorThickness);
 				break;
-			case 8:
+			case 7:
 				return FieldTrackingFileWriter(opFileName, DetectorThickness);
 				break;
 			default:
@@ -45,13 +40,13 @@ ParticleFileWriter GetFileWriter(const string& opFileName, int FileType, double 
 	{
 		switch(FileType)
 		{
-			case 6:
+			case 5:
 				return MLSpFileWriter(opFileName, DetectorThickness, ModelPath);
 				break;
-			case 8:
+			case 7:
 				return MLFieldTrackingFileWriter(opFileName, DetectorThickness, ModelPath);
 				break;
-			case 9:
+			case 8:
 				return HighZSearchFileWriter(opFileName, DetectorThickness, ModelPath);
 				break;
 			default:
@@ -71,19 +66,16 @@ ParticleFileWriter GetEmptyFileWriter(int FileType, double DetectorThickness, co
 			case 1:
 				return PxFileWriter(DetectorThickness);
 				break;
-			case 2:
-				return AngFileWriter(DetectorThickness);
-				break;
-			case 5: 
+			case 4: 
 				return FeatFileWriter(DetectorThickness);
 				break;
-			case 6:
+			case 5:
 				return SpFileWriter(DetectorThickness);
 				break;
-			case 7:
+			case 6:
 				return SatFileWriter(DetectorThickness);
 				break;
-			case 8:
+			case 7:
 				return FieldTrackingFileWriter(DetectorThickness);
 				break;
 			default:
@@ -95,13 +87,13 @@ ParticleFileWriter GetEmptyFileWriter(int FileType, double DetectorThickness, co
 	{
 		switch(FileType)
 		{
-			case 6:
+			case 5:
 				return MLSpFileWriter(DetectorThickness, ModelPath);
 				break;
-			case 8:
+			case 7:
 				return MLFieldTrackingFileWriter(DetectorThickness, ModelPath);
 				break;
-			case 9:
+			case 8:
 				return HighZSearchFileWriter(DetectorThickness, ModelPath);
 				break;
 			default:

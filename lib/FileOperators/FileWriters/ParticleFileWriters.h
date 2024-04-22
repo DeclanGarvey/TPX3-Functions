@@ -55,6 +55,8 @@ class AngFileWriter : public ParticleFileWriter
 
 class SpFileWriter : public ParticleFileWriter
 {
+	protected:
+		virtual double ThetaCalculationMethod(particle const& p);
 	public:
 		SpFileWriter(const std::string& opFileName, double DetectorThickness);
 		SpFileWriter(double DetectorThickness){DetectorThickness_=DetectorThickness;}
@@ -98,6 +100,8 @@ class SatFileWriter : public ParticleFileWriter
 };
 class FieldTrackingFileWriter : public ParticleFileWriter
 {
+	protected:
+		virtual double ThetaCalculationMethod(particle const& p);
 	public:
 		FieldTrackingFileWriter(const std::string& opFileName, double DetectorThickness);
 		FieldTrackingFileWriter(double DetectorThickness){DetectorThickness_=DetectorThickness;}

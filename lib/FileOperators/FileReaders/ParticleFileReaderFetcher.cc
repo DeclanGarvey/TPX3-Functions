@@ -23,7 +23,7 @@ ParticleFileReader GetFileReader(const string& ipFileName, int ipFileType)
 		case 3:
 			return SimFileReader(ipFileName);
 			break;
-		case 10:
+		case 9:
 			return BennyFileReader(ipFileName);
 			break;
 		default:
@@ -49,7 +49,7 @@ ParticleFileReader GetEmptyFileReader(int ipFileType)
 		case 3:
 			return SimFileReader();
 			break;
-		case 10:
+		case 9:
 			return BennyFileReader();
 			break;
 		default:

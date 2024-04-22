@@ -15,6 +15,14 @@ using namespace std;
 
 #include "TH1D.h"
 
+/*
+Applies ToT weighted line fit to the particle cluster 
+
+returns double vector of [Function type(0=>x, 1=>y) based on majority orientation, m, c) 
+
+y: f(x) = m*x + c
+x: f(y) = m*y + c
+*/
 vector<double> LineFit(particle const& p)
 {
 	double meanx=0, meany=0, meanxy=0, meanx2=0,meany2=0;
@@ -56,6 +64,12 @@ vector<double> LineFit(particle const& p)
 	}
 }
 
+/*
+Calculates the number of the cluster "p" contained with in a line drawn from point p1 to point p2
+
+line calculated by connected points p1 and p2
+considered inline if perpendicular distance is less than sqrt(2) = 0.7071 (diagonal with of a pixel)
+*/
 double PixelsInLine(particle const&p, int XFuncOrYYFunc, PixelHit const& p1, PixelHit const& p2)
 {
 	double n=0;
@@ -64,13 +78,15 @@ double PixelsInLine(particle const&p, int XFuncOrYYFunc, PixelHit const& p1, Pix
 	for (auto i = p.begin(); i != p.end(); i++ ) 
 	{
 		double dist = abs( m_dx * (i->y - p1.y) - m_dy * (i->x - p1.x));
-		if(dist<=1.0)//?
+		if(dist<=0.7071)
 			n+=1;
 	}
 	return n;
 }
 
-
+/*
+Calculates the percentage of pixels of the primary track contained within the energy weighted line fit of the cluster
+*/
 double Linearity(particle const& p)
 {
 	auto skel = Skeletonise(p,0,5);
@@ -101,6 +117,9 @@ double Linearity(particle const& p)
 	}
 }
 
+/*
+Calculates the percentage of pixels of the primary track contained within line drawn between the improved LLM points 
+*/
 double LLMLinearity(particle const& p)
 {
 	if(p.GetSize()>2)
@@ -119,6 +138,9 @@ double LLMLinearity(particle const& p)
 	}
 }
 
+/*
+Returns the particle cluster rotated to the horizontal based on the energy weighted line fit  
+*/
 particle RotateToNormal(particle const& p)
 {
 	
@@ -192,43 +214,12 @@ particle RotateToNormal(particle const& p)
 		}
     			
     	}
-    	/*else
-    	{
-		double sumvars = varx + vary;
-		double diffvars = varx - vary;
-		double discriminant = diffvars*diffvars + 4*covxy*covxy;
-		double sqrtdiscr = sqrt(discriminant);
-		// eigenvalues
-		double lambdaplus = (sumvars + sqrtdiscr)/2;
-		double lambdaminus = (sumvars - sqrtdiscr)/2;
-		//eigenvectors - these are the components of the two vectors
-		double aplus = varx + covxy - lambdaminus;
-		double bplus = vary + covxy - lambdaminus;
-		
-		double aminus = varx + covxy - lambdaplus;
-		double bminus = vary + covxy - lambdaplus;
-		
-		double denomPlus = sqrtf(aplus*aplus + bplus*bplus);
-		double denomMinus= sqrtf(aminus*aminus + bminus*bminus);
-		aplus = aplus/denomPlus;
-		bplus = bplus/denomPlus;
-		if(denomMinus!=0)
-		{
-			aminus = aminus/denomMinus;
-			bminus = bminus/denomMinus;
-		}
-		for (auto i=p.begin(); i != p.end(); i++ ) 
-		{
-			RotatedP.Insert(PixelHit{aplus*i->x + bplus*i->y,
-						aminus*i->x + bminus*i->y,
-						i->time,
-						i->energy});
-		}
-	}*/
-	
 	return RotatedP;
 }
 
+/*
+
+*/
 vector<double> BoxStds(particle const& p)
 {
 	double meanx=0,meany=0,meanx2=0, meany2=0;

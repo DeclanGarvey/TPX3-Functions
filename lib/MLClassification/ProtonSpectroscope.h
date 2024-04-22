@@ -5,13 +5,10 @@
 class particle;
 //class GeneralisedONNXModel;
 #include "GeneralisedONNXModel.h"
-/*
 
-*/
-class RandomForrestTheta : public GeneralisedONNXModel<float>
+class ProtonSpectroscope : public GeneralisedONNXModel<float>
 {
 	public:
-		RandomForrestTheta(const std::string& ModelPath) : GeneralisedONNXModel<float>(ModelPath) {}
+		ProtonSpectroscope(const std::string& ModelPath);
 		std::vector<float> CalculateInputFeatures(particle const& p);
 };
-

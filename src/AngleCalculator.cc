@@ -22,9 +22,9 @@ sigInterrupt (int sigval)
 
 
 /*
- * usage
- * Print out the module usage
- */
+* usage
+* Print out the module usage
+*/
 static void
 usage (void)
 {
@@ -37,6 +37,7 @@ usage (void)
 	fprintf (stderr, "-f <int>      : Specify the input file type, default set according to file ending. {0: ''}\n");
 	fprintf (stderr, "-z <double>	: Specify Detector Thickness, default 0.05 cm.\n");
 	fprintf (stderr, "-e		: Flag indicates to keep edge clusters in output, by default they are removed.\n");
+	fprintf (stderr, "-a            : Show available angle calculation methods for phi and theta. \n");
 	fprintf (stderr, "-s 		: Show data file types.\n");
 	fprintf (stderr, "\n");
 	fprintf (stderr, "Declare input file after all parameters are specified.(input file must be in standard _px.txt format)\n\n");
@@ -44,24 +45,25 @@ usage (void)
 }
 
 /*
- * Main entry point.
- */
+Main entry point.
+*/
 int main (int argc, const char *argv[])
 {
-	int opt;                            /* Local loop counter */
+	int opt; /* Local loop counter */
 	
-	string opFileName;            /* output file name */
-	int ipFileType;
-	string ipFileName; 			/* Input file name */
+	string opFileName; /* output file name */
+	int ipFileType; /* Input file type */
+	string ipFileName; /* Input file name */
 	
-	int theta_method=1, phi_method=4; 	/*Decides the phi and theta calculation method defaulting to improved llm and time weighted methods*/
-	double DetectorThickness = 0.05;
+	int theta_method=1, phi_method=4; /*Decides the phi and theta calculation method defaulting to improved llm and time weighted methods*/
+	double DetectorThickness = 0.05; /* Detector thickness used in calcalations defaults to 0.05 cm*/
 	bool RemoveEdges = true;
+	
 	/* Set up the signal handler */
 	(void)signal (SIGINT, sigInterrupt);
 	
 	/* Collect the arguments from the command line */
-	while ((opt = getopt (argc, (char * const*)argv, "?ho:t:p:f:z:es")) != EOF)
+	while ((opt = getopt (argc, (char * const*)argv, "?ho:t:p:f:z:eas")) != EOF)
 	{
 		/* Process the arguments */
 		switch (opt)
@@ -90,6 +92,9 @@ int main (int argc, const char *argv[])
 				break;
 			case 's':
 				ShowDataFileTypes();
+				break;
+			case 'a':
+				ShowAngleCalculationMethods();
 				break;
 			default:
 				fprintf (stderr, "Unrecognised option [-%c]\n", opt);

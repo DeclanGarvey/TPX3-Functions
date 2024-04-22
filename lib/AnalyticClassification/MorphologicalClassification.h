@@ -4,6 +4,8 @@ class particle;
 
 int GetMorphologicalClass(particle const& p);
 
+
+//Particle class Parameters
 namespace Dots
 {
 	const int MaximumSize=2;
@@ -28,7 +30,7 @@ namespace HeavyTracks
 namespace StraightTracks
 {
 	const double MinimumLinearity = 0.9;
-	const int MinimumInLinePixels = 4;//Originally was 20 in line pixels
+	const int MinimumInLinePixels = 4;
 }
 namespace ZeroIncidentParticles
 {
