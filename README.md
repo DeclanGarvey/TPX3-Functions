@@ -1,6 +1,6 @@
-This specialised C++ code for the data processin of Timepix and Timpix3 data (Rafael Ballabriga, Michael Campbell, and Xavier Llopart. “Asic developments for radiation imaging applications: The medipix and timepix family”. DOI: https://doi.org/10.1016/ URL: https : / / www . sciencedirect . com / science/article/pii/S0168900217307714.)
+This specialised C++ code for the data processing of Timepix and Timpix3 data (Rafael Ballabriga, Michael Campbell, and Xavier Llopart. “Asic developments for radiation imaging applications: The medipix and timepix family”. DOI: https://doi.org/10.1016/ URL: https : / / www . sciencedirect . com / science/article/pii/S0168900217307714.)
 
-This is the code used to produce the some of the results presented in:
+This is the code has been used to produce some of the results presented in:
 
 1. Timepix3 as a solid-state time-projection chamber in particle and nuclear physics, Proceedings of Science https://inspirehep.net/files/40698bfccc2ac859757e4284e4dbc7e8
 2.  Improved algorithms for determination of particle directions in space with Timepix3, Journal of Instrumentation https://arxiv.org/pdf/2111.00624.pdf
