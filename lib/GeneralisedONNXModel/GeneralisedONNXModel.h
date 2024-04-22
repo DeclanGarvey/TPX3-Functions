@@ -34,13 +34,13 @@ class GeneralisedONNXModel
 		/*GeneralisedONNXModel(const GeneralisedONNXModel&) = default;
 		GeneralisedONNXModel& operator=(const GeneralisedONNXModel&) =  = default;
 		*/
-		virtual ~GeneralisedONNXModel()
+		/*virtual ~GeneralisedONNXModel()
 		{
 			for (const char* name : InputNames_) 
 			    delete[] name; // Deallocate memory
 			for (const char* name : OutputNames_) 
 			    delete[] name; // Deallocate memory
-		}
+		}*/
 		
 		
 

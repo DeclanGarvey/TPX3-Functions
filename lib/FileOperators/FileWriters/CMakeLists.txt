@@ -1,4 +1,4 @@
-add_library(ParticleFileWriters FileWriterFetcher.cc ParticleFileWriters.cc MLStoppingPowerFileWriter.cc MLFieldTrackingFileWriter.cc HighZSearchFileWriter.cc)
+add_library(ParticleFileWriters FileWriterFetcher.cc ParticleFileWriters.cc MLParticleFileWriters.cc)
 
 target_include_directories(ParticleFileWriters PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

@@ -25,5 +25,5 @@ class ParticleFileFilter : public ParticleGeneratorBaseClass
 		void operator() (ParticleFileReader* NewReader);
 		void GenerateFiltersFromConfig(const std::string& ConfigFileFilters);
 		bool AssignParticle(particle& p);
-		~ParticleFileFilter();
+		//~ParticleFileFilter(){delete reader;}
 };

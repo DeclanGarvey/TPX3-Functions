@@ -60,7 +60,7 @@ bool ParticleFileFilter::AssignParticle(particle& p)
 	}
 	return NotEndOfFile;
 }
-ParticleFileFilter::~ParticleFileFilter()
+/*ParticleFileFilter::~ParticleFileFilter()
 {
 	delete reader;
-}
+}*/

@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <string>
 
-//#include "TCollection.h"
+#include "ParticleFileReaderFetcher.h"
 #include "ParticleFileReaders.h"
 #include "FileNames.h" 
 
@@ -11,6 +11,40 @@
 #include "ReadAngles.h"
 using namespace std;
 
+/*
+Prints available angle calculation functions developed for Improved algorithms for determination of particle directions in space with Timepix3, Journal of Instrumentation https://arxiv.org/pdf/2111.00624.pdf
+*/
+void ShowAngleCalculationMethods()
+{
+	fprintf (stderr, "Possible Theta Calculation Methods:\n\n");
+	fprintf (stderr, "0	: Simple LLM Algorithm'\n");
+	fprintf (stderr, "1	: Improved LLM Algorithm \n");
+	fprintf (stderr, "2	: Min-Max Algorithm'\n");
+	fprintf (stderr, "3	: ToA Gradient Algorithm\n");
+	fprintf (stderr, "-1	: Theta not calculated \n");
+	fprintf (stderr, "\n");
+	fprintf (stderr, "Possible Phi Calculation Methods:\n\n");
+	fprintf (stderr, "0	: Simple LLM Algorithm'\n");
+	fprintf (stderr, "1	: Improved LLM Algorithm \n");
+	fprintf (stderr, "2	: Min-Max Algorithm'\n");
+	fprintf (stderr, "3	: ToA Gradient Algorithm\n");
+	fprintf (stderr, "4	: Time-weighted averaging\n");
+	fprintf (stderr, "-1	: Phi not calculated \n");
+	fprintf (stderr, "\n\n");
+	fprintf (stderr, "Algorithms based on Improved algorithms for determination of particle directions in space with Timepix3,\n");
+	fprintf (stderr, "Journal of Instrumentation https://arxiv.org/pdf/2111.00624.pdf\n\n");
+
+	exit (1);
+}
+/*
+Functions takees in an 
+1: input file path 
+2: output file path
+3: File type of input based on /lib/fileoperators/FileNames/FileNames.cc
+4: Detector thickness in cm,  0.05 cm is used
+5: Theta calculation method
+6: Phi calculation method
+*/
 void CalculateAngles(const string& ipFileName, const string& opFileName, int ipFileType, double DetectorThickness, int theta_method, int phi_method, bool RemoveEdges)
 {
 	FILE* opf;

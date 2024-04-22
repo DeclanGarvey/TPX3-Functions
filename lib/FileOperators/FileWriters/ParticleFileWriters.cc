@@ -121,11 +121,16 @@ void SpFileWriter::UpdateFileOutput(const string& opFileName)
 	opFile_ = fopen((RemoveExtension(opFileName)+ "_sp.txt").c_str(),"w");
 }
 
+double SpFileWriter::ThetaCalculationMethod(particle const& p)
+{
+	return ThetaImprovedLLM(p, DetectorThickness_);
+}
+
 bool SpFileWriter::AddParticle(particle const& p)
 {
 	if(p.IsEmpty()==false)
 	{
-		double theta = ThetaImprovedLLM(p, DetectorThickness_);
+		double theta = ThetaCalculationMethod(p);
 		double phi =  PhiTimeWeighted(p);
 		double sp = StoppingPower(p.GetEnergy(), theta, DetectorThickness_); 
 		double AcquisitionTime_ = p.AcquisitionTime;
@@ -259,14 +264,19 @@ void FieldTrackingFileWriter::UpdateFileOutput(const string& opFileName)
 	else 
 		opFile_ = fopen((opFileName+ "_tracking.txt").c_str(),"w");
 }
+
+double FieldTrackingFileWriter::ThetaCalculationMethod(particle const& p)
+{
+	return ThetaImprovedLLM(p, DetectorThickness_);
+}
 bool FieldTrackingFileWriter::AddParticle(particle const& p)
 {
 	if(p.IsEmpty()==false)
 	{
 		int MorphClass = GetMorphologicalClass(p);
-		double theta = ThetaImprovedLLM(p, DetectorThickness_);
+		double theta = ThetaCalculationMethod(p);
 		double phi = PhiTimeWeighted(p);
-		fprintf(opFile_, "%lf %d %d %lf %lf %lf %lf\n", p.GetMinToA(), MorphClass, p.GetSize(), p.GetEnergy(), theta, phi, ThetaImprovedLLM(p, DetectorThickness_));
+		fprintf(opFile_, "%lf %d %d %f %lf %lf %lf\n", p.GetMinToA(), MorphClass, p.GetSize(), p.GetEnergy(), theta, phi, ThetaImprovedLLM(p, DetectorThickness_));
 		return true;
 	}
 	else 

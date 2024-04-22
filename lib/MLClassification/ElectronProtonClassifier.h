@@ -5,13 +5,10 @@
 class particle;
 //class GeneralisedONNXModel;
 #include "GeneralisedONNXModel.h"
-/*
 
-*/
-class RandomForrestTheta : public GeneralisedONNXModel<float>
+class ElectronProtonClassifier : public GeneralisedONNXModel<bool>
 {
 	public:
-		RandomForrestTheta(const std::string& ModelPath) : GeneralisedONNXModel<float>(ModelPath) {}
+		ElectronProtonClassifier(const std::string& ModelPath);
 		std::vector<float> CalculateInputFeatures(particle const& p);
 };
-

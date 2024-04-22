@@ -8,8 +8,6 @@ using namespace std;
 #include "AngleCalulationFunctions.h"
 #include "ParticleFileWriters.h"
 
-#include "MLStoppingPowerFileWriter.h"
-
 MLSpFileWriter::MLSpFileWriter(const string& opFileName, double DetectorThickness, const string& ModelPath) : SpFileWriter(opFileName, DetectorThickness)
 {	
 	ThetaModel = std::make_unique<RandomForrestTheta>(ModelPath);

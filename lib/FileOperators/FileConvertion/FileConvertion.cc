@@ -13,7 +13,7 @@ using namespace std;
 #include "FileWriterFetcher.h"
 #include "ParticleGeneratorBaseClass.h"
 #include "ParticleFileWriters.h"
-#include "MLStoppingPowerFileWriter.h"
+#include "MLParticleFileWriters.h"
 #include "FileNames.h"
 
 #include "FileConvertion.h"
@@ -56,7 +56,7 @@ void ConvertDirectoryTo(const string& ipDirectoryName, const string& opDirectory
 	{
 		if( ((ipFileType!=-1) & (GetFileType(ipFileName)==ipFileType)) | 
 			((ipFileType==-1) & (GetFileType(ipFileName)>=0) & (GetFileType(ipFileName)<=4)) |
-			((ipFileType==3) & (GetFileType(ipFileName)==0)) | ((ipFileType==10) & (GetFileType(ipFileName)==0)) // Deals with special Case of SATRAM file type 
+			((ipFileType==2) & (GetFileType(ipFileName)==0)) | ((ipFileType==9) & (GetFileType(ipFileName)==0)) // Deals with special Case of SATRAM file type 
 			)
 		{
 			if( (opFileType == GetFileType(ipFileName)) &

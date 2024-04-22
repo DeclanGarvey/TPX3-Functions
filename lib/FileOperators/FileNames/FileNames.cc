@@ -9,13 +9,14 @@ void ShowDataFileTypes()
 	fprintf (stderr, "Possible Data File Types:\n\n");
 	fprintf (stderr, "0	: .root, Standard root file type'\n");
 	fprintf (stderr, "1	: _px.txt \n");
-	fprintf (stderr, "2	: _ang.txt \n");
-	fprintf (stderr, "3	: .root, SATRAM root file type',\n");
-	fprintf (stderr, "4	: _sim.txt \n");
-	fprintf (stderr, "5	: _feat.txt \n");
-	fprintf (stderr, "6	: _sp.txt \n");
-	fprintf (stderr, "7	: _sat.txt \n");
-	fprintf (stderr, "8	: _tracking.txt\n");
+	fprintf (stderr, "2	: .root, SATRAM root file type',\n");
+	fprintf (stderr, "3	: _sim.txt \n");
+	fprintf (stderr, "4	: _feat.txt \n");
+	fprintf (stderr, "5	: _sp.txt \n");
+	fprintf (stderr, "6	: _sat.txt \n");
+	fprintf (stderr, "7	: _tracking.txt\n");
+	fprintf (stderr, "8	: _zsearch.txt\n");
+	fprintf (stderr, "9	: .root, root file type created by Benny(MoEDAL,Simulation, etc.)',\n");
 	fprintf (stderr, "\n\n");
 	exit (1);
 }
@@ -31,23 +32,21 @@ int GetFileType(const string& ipFileName)
 			if(ipFileName.substr(ipFileName.size()-7)=="_px.txt")
 				FileType=1;
 			else if(ipFileName.substr(ipFileName.size()-7)=="_sp.txt")
-				FileType=6;
+				FileType=5;
 			else if(ipFileName.size()>8){
-				if(ipFileName.substr(ipFileName.size()-8)=="_ang.txt")
-					FileType=2;
-				else if(ipFileName.substr(ipFileName.size()-8)=="_sim.txt")
-					FileType=4;
+				if(ipFileName.substr(ipFileName.size()-8)=="_sim.txt")
+					FileType=3;
 				else if(ipFileName.substr(ipFileName.size()-8)=="_sat.txt")
-					FileType=7;
+					FileType=6;
 				else if(ipFileName.size()>9){
 					if(ipFileName.substr(ipFileName.size()-9)=="_feat.txt")
-						FileType=5;
+						FileType=4;
 					else if(ipFileName.size()>12){
 						if(ipFileName.substr(ipFileName.size()-12)=="_zsearch.txt")
-							FileType=9;
+							FileType=8;
 						else if(ipFileName.size()>13){
 							if(ipFileName.substr(ipFileName.size()-13)=="_tracking.txt")
-								FileType=8;
+								FileType=7;
 						}
 					}
 				}
@@ -70,9 +69,7 @@ string RemoveExtension(const string& FileName)
 			else if(FileName.substr(FileName.size()-7)=="_sp.txt")
 				return FileName.substr(0,FileName.size()-7);
 			else if(FileName.size()>8){
-				if(FileName.substr(FileName.size()-8)=="_ang.txt")
-					return FileName.substr(0,FileName.size()-8);
-				else if(FileName.substr(FileName.size()-8)=="_sim.txt")
+				if(FileName.substr(FileName.size()-8)=="_sim.txt")
 					return FileName.substr(0,FileName.size()-8);
 				else if(FileName.substr(FileName.size()-8)=="_sat.txt")
 					return FileName.substr(0,FileName.size()-8);
