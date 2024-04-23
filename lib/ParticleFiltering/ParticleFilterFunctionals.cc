@@ -9,7 +9,7 @@ using namespace std;
 #include "FluenceStoppingPower.h"
 #include "ClusterFeatures.h"
 
-#include "ParticleFilters.h"
+#include "ParticleFilterFunctionals.h"
 
 function<bool(particle& p)> GetFilter(const string& FilterName, const string& FilterValue)
 {

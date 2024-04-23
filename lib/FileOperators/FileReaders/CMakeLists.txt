@@ -5,6 +5,7 @@ find_package(ROOT)
 target_link_libraries(ParticleFileReaders  PUBLIC ROOT::Core ROOT::RIO ROOT::Net ROOT::Tree)
 target_link_libraries(ParticleFileReaders PUBLIC FileNames)
 target_link_libraries(ParticleFileReaders PUBLIC ParticleCluster)
+target_link_libraries(ParticleFileReaders PUBLIC ParticleFiltering)
 target_link_libraries(ParticleFileReaders PUBLIC ClusterFunctions)
 target_link_libraries(ParticleFileReaders PUBLIC AngleProject)
 
