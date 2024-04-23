@@ -5,57 +5,57 @@ using namespace std;
 #include "ParticleFileReaderFetcher.h"
 
 
-ParticleFileReader GetFileReader(const string& ipFileName, int ipFileType)
+unique_ptr<ParticleFileReader> GetFileReader(const string& ipFileName, int ipFileType)
 {
 	if(ipFileType==-1)
 		ipFileType = GetFileType(ipFileName);
 	switch(ipFileType)
 	{
 		case 0:
-			return ROOTFileReader(ipFileName);
+			return make_unique<ROOTFileReader>(ipFileName);
 			break;
 		case 1:
-			return PxFileReader(ipFileName);
+			return make_unique<PxFileReader>(ipFileName);
 			break;
 		case 2:
-			return SATRAMFileReader(ipFileName);
+			return make_unique<SATRAMFileReader>(ipFileName);
 			break;
 		case 3:
-			return SimFileReader(ipFileName);
+			return make_unique<SimFileReader>(ipFileName);
 			break;
 		case 9:
-			return BennyFileReader(ipFileName);
+			return make_unique<BennyFileReader>(ipFileName);
 			break;
 		default:
 			cout<<ipFileType<<" is an unknown data type(0: .root(standard), 1:_px.txt, 2:_ang.txt, 3: .root(SATRAM), 4:_sim.txt)"<<endl;
 			break;
 	}
-	return ParticleFileReader();
+	return make_unique<ParticleFileReader>();
 }
 
-ParticleFileReader GetEmptyFileReader(int ipFileType)
+unique_ptr<ParticleFileReader> GetEmptyFileReader(int ipFileType)
 {
 	switch(ipFileType)
 	{
 		case 0:
-			return ROOTFileReader();
+			return make_unique<ROOTFileReader>();
 			break;
 		case 1:
-			return PxFileReader();
+			return make_unique<PxFileReader>();
 			break;
 		case 2:
-			return SATRAMFileReader();
+			return make_unique<SATRAMFileReader>();
 			break;
 		case 3:
-			return SimFileReader();
+			return make_unique<SimFileReader>();
 			break;
 		case 9:
-			return BennyFileReader();
+			return make_unique<BennyFileReader>();
 			break;
 		default:
 			cout<<ipFileType<<" is an unknown data type(0: .root(standard), 1:_px.txt, 2:_ang.txt, 3: .root(SATRAM), 4:_sim.txt)"<<endl;
 			break;
 	}
-	return ParticleFileReader();
+	return make_unique<ParticleFileReader>();
 }
 

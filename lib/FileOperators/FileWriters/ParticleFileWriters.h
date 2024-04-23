@@ -37,9 +37,10 @@ class PxFileWriter : public ParticleFileWriter
 		
 		void UpdateFileOutput(const std::string& opFileName);
 		
-		bool AddParticle(particle const& p);
+		
 		void AddInitInfo(const std::string&  ipInfo);
-		void Close();
+		bool AddParticle(particle const& p) override;
+		void Close() override;
 };
 
 class AngFileWriter : public ParticleFileWriter
@@ -48,9 +49,8 @@ class AngFileWriter : public ParticleFileWriter
 		AngFileWriter(const std::string& opFileName, double DetectorThickness);
 		AngFileWriter(double DetectorThickness){DetectorThickness_=DetectorThickness;}
 		
-		void UpdateFileOutput(const std::string& opFileName);
-		
-		bool AddParticle(particle const& p);
+		void UpdateFileOutput(const std::string& opFileName) override;
+		bool AddParticle(particle const& p) override;
 };
 
 class SpFileWriter : public ParticleFileWriter
@@ -61,9 +61,8 @@ class SpFileWriter : public ParticleFileWriter
 		SpFileWriter(const std::string& opFileName, double DetectorThickness);
 		SpFileWriter(double DetectorThickness){DetectorThickness_=DetectorThickness;}
 		
-		void UpdateFileOutput(const std::string& opFileName);
-		
-		bool AddParticle(particle const& p);
+		void UpdateFileOutput(const std::string& opFileName) override;
+		bool AddParticle(particle const& p) override;
 };
 
 class FeatFileWriter : public ParticleFileWriter
@@ -72,9 +71,8 @@ class FeatFileWriter : public ParticleFileWriter
 		FeatFileWriter(const std::string& opFileName, double DetectorThickness);
 		FeatFileWriter(double DetectorThickness){DetectorThickness_=DetectorThickness;}
 		
-		void UpdateFileOutput(const std::string& opFileName);
-		
-		bool AddParticle(particle const& p);
+		void UpdateFileOutput(const std::string& opFileName) override;
+		bool AddParticle(particle const& p) override;
 };
 
 class SatFileWriter : public ParticleFileWriter
@@ -94,9 +92,8 @@ class SatFileWriter : public ParticleFileWriter
 		SatFileWriter(const std::string& opFileName, double DetectorThickness);
 		SatFileWriter(double DetectorThickness){DetectorThickness_=DetectorThickness;}
 
-		void UpdateFileOutput(const std::string& opFileName);
-
-		bool AddParticle(particle const& p);
+		void UpdateFileOutput(const std::string& opFileName) override;
+		bool AddParticle(particle const& p) override;
 };
 class FieldTrackingFileWriter : public ParticleFileWriter
 {
@@ -106,7 +103,6 @@ class FieldTrackingFileWriter : public ParticleFileWriter
 		FieldTrackingFileWriter(const std::string& opFileName, double DetectorThickness);
 		FieldTrackingFileWriter(double DetectorThickness){DetectorThickness_=DetectorThickness;}
 		
-		void UpdateFileOutput(const std::string& opFileName);
-		
-		bool AddParticle(particle const& p);
+		void UpdateFileOutput(const std::string& opFileName) override;
+		bool AddParticle(particle const& p) override;
 };

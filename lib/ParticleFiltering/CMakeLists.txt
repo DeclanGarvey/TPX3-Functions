@@ -1,5 +1,5 @@
 
-add_library(ParticleFiltering ParticleFileReaderFilter.cc ParticleFilters.cc)
+add_library(ParticleFiltering ParticleFilter.cc ParticleFilterFunctionals.cc)
 target_include_directories(ParticleFiltering PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(ParticleFiltering PRIVATE ParticleCluster)

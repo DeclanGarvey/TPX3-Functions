@@ -12,17 +12,18 @@ class TIter;
 class TSystemFile;
 class TH1D;
 
+#include "ParticleFilter.h"
 
-#include "ParticleGeneratorBaseClass.h"
-
+class ParticleFilter;
 class particle;
 
-class ParticleFileReader : public ParticleGeneratorBaseClass
+class ParticleFileReader
 {
 	protected:
 		FILE* ipFile_=nullptr;
+		ParticleFilter Filter_;
 	public:
-		virtual void UpdateFileInput(const std::string& ipFileName) {};
+		virtual void UpdateFileInput(const std::string& ipFileName) {std::cout<<"Wrong"<<std::endl;};
 		virtual void Close() 
 		{
 			if(ipFile_!=nullptr)
@@ -31,6 +32,12 @@ class ParticleFileReader : public ParticleGeneratorBaseClass
 				ipFile_=nullptr;
 			}
 		}
+		void AddParticleFiltersFromConfig(const std::string& FilterConfig);
+		void AddParticleFiltersFromConfig(ParticleFilter& Filter);
+		void AddParticleFilter(const std::string& VariableFilter, const std::string& Value);
+		
+		virtual bool AssignParticle(particle& p){return false;};
+		
 		virtual ~ParticleFileReader() {Close();}
 };
 
@@ -38,9 +45,9 @@ class PxFileReader : public ParticleFileReader
 {
 	public:
 		PxFileReader() {};
-		PxFileReader(const std::string& ipFileName){ UpdateFileInput(ipFileName); }
-		void UpdateFileInput(const std::string& ipFileName);
-		bool AssignParticle(particle &p);
+		PxFileReader(const std::string& ipFileName);
+		void UpdateFileInput(const std::string& ipFileName) override;
+		bool AssignParticle(particle &p) override;
 };
 
 class AngFileReader : public ParticleFileReader
@@ -48,8 +55,8 @@ class AngFileReader : public ParticleFileReader
 	public:
 		AngFileReader() {}
 		AngFileReader(const std::string& ipFileName){ UpdateFileInput(ipFileName); }
-		void UpdateFileInput(const std::string& ipFileName);
-		bool AssignParticle(particle &p);
+		void UpdateFileInput(const std::string& ipFileName) override;
+		bool AssignParticle(particle &p) override;
 };
 
 class SimFileReader : public ParticleFileReader
@@ -57,8 +64,8 @@ class SimFileReader : public ParticleFileReader
 	public:
 		SimFileReader() {}
 		SimFileReader(const std::string& ipFileName){ UpdateFileInput(ipFileName); }
-		void UpdateFileInput(const std::string& ipFileName);
-		bool AssignParticle(particle &p);
+		void UpdateFileInput(const std::string& ipFileName) override;
+		bool AssignParticle(particle &p) override;
 };
 
 class ROOTFileReader : public ParticleFileReader
@@ -79,9 +86,9 @@ class ROOTFileReader : public ParticleFileReader
 	public:
 		ROOTFileReader() {}
 		ROOTFileReader(const std::string& ipFileName){ UpdateFileInput(ipFileName); }
-		void UpdateFileInput(const std::string& ipFileName);
-		bool AssignParticle(particle &p);
-		void Close();
+		void UpdateFileInput(const std::string& ipFileName) override;
+		bool AssignParticle(particle &p) override;
+		void Close() override;
 };
 
 class SATRAMFileReader : public ParticleFileReader
@@ -108,14 +115,14 @@ class SATRAMFileReader : public ParticleFileReader
 	public:
 		SATRAMFileReader() {}
 		SATRAMFileReader(const std::string& ipFileName){ UpdateFileInput(ipFileName); }
-		void UpdateFileInput(const std::string& ipFileName);
-		bool AssignParticle(particle &p);
 		void SetMaximumOccupancy(double NewMaxOccupancy);
 		void SetMinimumOccupancy(double NewMaxOccupancy);
 		float GetCurrentOccupancy();
 		int GetCurrentOrbitRegion();
 		double GetAcquisitionTime();
-		void Close();
+		void UpdateFileInput(const std::string& ipFileName) override;
+		bool AssignParticle(particle &p) override;
+		void Close() override;
 };
 class StoppingPowerFileReader
 {
@@ -185,8 +192,8 @@ class BennyFileReader : public ParticleFileReader
 	public:
 		BennyFileReader() {}
 		BennyFileReader(const std::string& ipFileName){ UpdateFileInput(ipFileName); }
-		void UpdateFileInput(const std::string& ipFileName);
-		bool AssignParticle(particle &p);
-		void Close();
+		void UpdateFileInput(const std::string& ipFileName) override;
+		bool AssignParticle(particle &p) override;
+		void Close() override;
 };
 

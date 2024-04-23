@@ -52,8 +52,8 @@ TH1D* GetStoppingPowerFluenceCurve(const string& ipFileName, int ipFileType, dou
 {
 	TH1D* Curve = new TH1D(Name.c_str(), Title.c_str(), NoBins, XLow, XHigh);
 	particle p;
-	ParticleFileReader reader = GetFileReader(ipFileName,ipFileType);
-	while(reader.AssignParticle(p))
+	unique_ptr<ParticleFileReader> reader = GetFileReader(ipFileName,ipFileType);
+	while(reader->AssignParticle(p))
 	{
 		double theta = ThetaImprovedLLM(p,d);
 		double sp = StoppingPower(p.GetEnergy(), theta, d); 
@@ -63,7 +63,6 @@ TH1D* GetStoppingPowerFluenceCurve(const string& ipFileName, int ipFileType, dou
 			Curve->Fill(sp, weight);
 		}
 	}
-	reader.Close();
 	return Curve;
 }
 

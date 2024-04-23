@@ -49,7 +49,6 @@ void particle::Insert(const PixelHit& Hit)
 	sum_energy_+=Hit.energy;
 	sum_time += Hit.time;
 	size_+=1;
-	//std::cout<<size_<<endl;
 }
 
 

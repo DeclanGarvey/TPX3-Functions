@@ -8,7 +8,7 @@ using namespace std;
 
 #include "FileWriterFetcher.h"
 
-ParticleFileWriter GetFileWriter(const string& opFileName, int FileType, double DetectorThickness, const string& ModelPath)
+unique_ptr<ParticleFileWriter> GetFileWriter(const string& opFileName, int FileType, double DetectorThickness, const string& ModelPath)
 {
 	if(FileType==-1)
 		FileType = GetFileType(opFileName);
@@ -17,19 +17,19 @@ ParticleFileWriter GetFileWriter(const string& opFileName, int FileType, double 
 		switch(FileType)
 		{
 			case 1:
-				return PxFileWriter(opFileName, DetectorThickness);
+				return make_unique<PxFileWriter>(opFileName, DetectorThickness);
 				break;
 			case 4: 
-				return FeatFileWriter(opFileName, DetectorThickness);
+				return make_unique<FeatFileWriter>(opFileName, DetectorThickness);
 				break;
 			case 5:
-				return SpFileWriter(opFileName, DetectorThickness);
+				return make_unique<SpFileWriter>(opFileName, DetectorThickness);
 				break;
 			case 6:
-				return SatFileWriter(opFileName, DetectorThickness);
+				return make_unique<SatFileWriter>(opFileName, DetectorThickness);
 				break;
 			case 7:
-				return FieldTrackingFileWriter(opFileName, DetectorThickness);
+				return make_unique<FieldTrackingFileWriter>(opFileName, DetectorThickness);
 				break;
 			default:
 				cout<<FileType<<" is an unknown data type(1:_px.txt, 2:_ang.txt, 5:_feat.txt, 6:_sp.txt)"<<endl;
@@ -41,42 +41,42 @@ ParticleFileWriter GetFileWriter(const string& opFileName, int FileType, double 
 		switch(FileType)
 		{
 			case 5:
-				return MLSpFileWriter(opFileName, DetectorThickness, ModelPath);
+				return make_unique<MLSpFileWriter>(opFileName, DetectorThickness, ModelPath);
 				break;
 			case 7:
-				return MLFieldTrackingFileWriter(opFileName, DetectorThickness, ModelPath);
+				return make_unique<MLFieldTrackingFileWriter>(opFileName, DetectorThickness, ModelPath);
 				break;
 			case 8:
-				return HighZSearchFileWriter(opFileName, DetectorThickness, ModelPath);
+				return make_unique<HighZSearchFileWriter>(opFileName, DetectorThickness, ModelPath);
 				break;
 			default:
 				cout<<FileType<<" is an unknown ML data type(6:_sp.txt)"<<endl;
 				break;
 		}
 	}
-	return ParticleFileWriter();
+	return make_unique<ParticleFileWriter>();
 }
 
-ParticleFileWriter GetEmptyFileWriter(int FileType, double DetectorThickness, const string& ModelPath)
+unique_ptr<ParticleFileWriter> GetEmptyFileWriter(int FileType, double DetectorThickness, const string& ModelPath)
 {
 	if(ModelPath.empty())
 	{
 		switch(FileType)
 		{
 			case 1:
-				return PxFileWriter(DetectorThickness);
+				return make_unique<PxFileWriter>(DetectorThickness);
 				break;
 			case 4: 
-				return FeatFileWriter(DetectorThickness);
+				return make_unique<FeatFileWriter>(DetectorThickness);
 				break;
 			case 5:
-				return SpFileWriter(DetectorThickness);
+				return make_unique<SpFileWriter>(DetectorThickness);
 				break;
 			case 6:
-				return SatFileWriter(DetectorThickness);
+				return make_unique<SatFileWriter>(DetectorThickness);
 				break;
 			case 7:
-				return FieldTrackingFileWriter(DetectorThickness);
+				return make_unique<FieldTrackingFileWriter>(DetectorThickness);
 				break;
 			default:
 				cout<<FileType<<" is an unknown data type(1:_px.txt, 2:_ang.txt, 5:_feat.txt, 6:_sp.txt)"<<endl;
@@ -88,20 +88,20 @@ ParticleFileWriter GetEmptyFileWriter(int FileType, double DetectorThickness, co
 		switch(FileType)
 		{
 			case 5:
-				return MLSpFileWriter(DetectorThickness, ModelPath);
+				return make_unique<MLSpFileWriter>(DetectorThickness, ModelPath);
 				break;
 			case 7:
-				return MLFieldTrackingFileWriter(DetectorThickness, ModelPath);
+				return make_unique<MLFieldTrackingFileWriter>(DetectorThickness, ModelPath);
 				break;
 			case 8:
-				return HighZSearchFileWriter(DetectorThickness, ModelPath);
+				return make_unique<HighZSearchFileWriter>(DetectorThickness, ModelPath);
 				break;
 			default:
 				cout<<FileType<<" is an unknown ML data type(6:_sp.txt)"<<endl;
 				break;
 		}
 	}
-	return ParticleFileWriter();
+	return make_unique<ParticleFileWriter>();
 }
 
 

@@ -11,63 +11,56 @@ using namespace std;
 #include "FileNames.h"
 #include "FittingVariables.h"
 #include "FluenceStoppingPower.h"
-
+#include "ParticleFilter.h"
 
 #include "ParticleFileReaders.h"
 
+void ParticleFileReader::AddParticleFiltersFromConfig(const std::string& FilterConfig)
+{
+	Filter_=ParticleFilter(FilterConfig);
+}
+void ParticleFileReader::AddParticleFiltersFromConfig(ParticleFilter& Filter)
+{
+	Filter_ = ParticleFilter();
+}
+void ParticleFileReader::AddParticleFilter(const std::string& VariableFilter, const std::string& Value)
+{
+	Filter_.AddFilter(VariableFilter, Value);
+}
+
+PxFileReader::PxFileReader(const std::string& ipFileName)
+{ 
+	UpdateFileInput(ipFileName);
+	
+}
 
 void PxFileReader::UpdateFileInput(const string& ipFileName)
 {
 	Close();
 	ipFile_ =fopen((ipFileName).c_str(),"r");
+	
 }
 
 bool PxFileReader::AssignParticle(particle &p)
 {
-	p.Clear();
+	
 	PixelHit hit;
-	while(fscanf(ipFile_, "%lf %lf %lf %lf\n", &hit.x, &hit.y, &hit.time, &hit.energy)==4)
-	{
-		p.Insert(hit);
-	}
 	char hashtag;
-	if(fscanf(ipFile_, "%c\n", &hashtag)!=EOF){
-		//if (hashtag!='#') {fprintf(stderr, "What is?   %c\n", hashtag); throw std::runtime_error("input file error, does not follow standard _px file format, # should follow all clusters.");}
-		return true;
-	}
-	else			
+	do
 	{
-		Close();
-		return false;
-	}
-}
-
-
-void AngFileReader::UpdateFileInput(const string& ipFileName)
-{
-	Close();
-	ipFile_ =fopen((ipFileName).c_str(),"r");
-}
-
-bool AngFileReader::AssignParticle(particle &p)
-{
-	p.Clear();
-	bool IsEnd;
-	IsEnd = (fscanf(ipFile_, "theta=%lf,phi=%lf\n", &p.theta, &p.phi)!=EOF);
-	if(IsEnd)
-	{
-		PixelHit hit;
+		p.Clear();
 		while(fscanf(ipFile_, "%lf %lf %lf %lf\n", &hit.x, &hit.y, &hit.time, &hit.energy)==4)
 		{
 			p.Insert(hit);
 		}
-		return true;
+		if(fscanf(ipFile_, "%c\n", &hashtag)==EOF)
+		{
+			Close();
+			return false;
+		}
 	}
-	else			
-	{
-		Close();
-		return false;
-	}
+	while(Filter_(p)==false);
+	return true;
 }
 
 
@@ -79,24 +72,24 @@ void SimFileReader::UpdateFileInput(const string& ipFileName)
 
 bool SimFileReader::AssignParticle(particle &p)
 {
-	p.Clear();
-	bool IsEnd;
+	PixelHit hit;
 	int s;
-	IsEnd = (fscanf(ipFile_, "ParticleType=%d,Size=%d,Energy=%lf,Theta=%lf,Phi=%lf\n", &p.ParticleType, &s, &p.PrimaryEnergy, &p.theta, &p.phi)!=EOF);
-	if(IsEnd)
+	do
 	{
-		PixelHit hit;
+		p.Clear();
+		if(fscanf(ipFile_, "ParticleType=%d,Size=%d,Energy=%lf,Theta=%lf,Phi=%lf\n", &p.ParticleType, &s, &p.PrimaryEnergy, &p.theta, &p.phi)==EOF)
+		{
+			Close();
+			return false;
+		}
+		
 		while(fscanf(ipFile_, "%lf %lf %lf %lf\n", &hit.x, &hit.y, &hit.time, &hit.energy)==4)
 		{
 			p.Insert(hit);
 		}
-		return true;
 	}
-	else			
-	{
-		Close();
-		return false;
-	}
+	while(Filter_(p)==false);
+	return true;
 }
 
 
@@ -125,10 +118,14 @@ void ROOTFileReader::UpdateFileInput(const string& ipFileName)
 }
 bool ROOTFileReader::AssignParticle(particle &p)
 {
-	
-	p.Clear();
-	if(CurrentEntryNo<Data_->GetEntries())
+	do
 	{
+		p.Clear();
+		if(CurrentEntryNo>=Data_->GetEntries())
+		{
+			Close();
+			return false;
+		}
 		Data_->GetEntry(CurrentEntryNo);
 		p.theta = theta * (M_PI/180); 	// deg -> Rad as required by algorithms
 		p.phi = phi * (M_PI/180);	// deg -> Rad as required by algorithms
@@ -139,9 +136,9 @@ bool ROOTFileReader::AssignParticle(particle &p)
 			p.Insert(PixelHit{static_cast<double>(x[j]), static_cast<double>(y[j]), 0, energy[j]});
 		}
 		CurrentEntryNo++;
-		return true;
 	}
-	return false;
+	while(Filter_(p)==false);
+	return true;
 }
 void ROOTFileReader::Close() 
 {
@@ -176,19 +173,17 @@ void SATRAMFileReader::UpdateFileInput(const string& ipFileName)
 
 }
 
-
-
-
 bool SATRAMFileReader::AssignParticle(particle &p)
 {
-	
 	p.Clear();
 	do	
 	{
 		if( (CurrentClusterEntry>=ClusterFile_->GetEntries()) | (CurrentSatEntry>=dscData_->GetEntries()))
-			break;
+		{
+			Close();
+			return false;
+		}
 		
-		//cout<<occupancy_<<" "<<good_region<<endl;
 		ClusterFile_->GetEntry(CurrentClusterEntry);
 		dscData_->GetEntry(CurrentSatEntry);
 		while( dtime != ctime )
@@ -199,27 +194,23 @@ bool SATRAMFileReader::AssignParticle(particle &p)
 			else
 				dscData_->GetEntry(CurrentSatEntry);
 		}
+		for(int j=0;j<size;j++)
+		{
+			auto t = PixelHit{static_cast<double>(x[j]), static_cast<double>(y[j]), ctime, energy[j]};
+			p.Insert(t);
+		}
 		CurrentClusterEntry++;
-	}while((occupancy_<MinOccupancy_) |(occupancy_>MaxOccupancy_) | (good_region==0));
+	}while((occupancy_<MinOccupancy_) |(occupancy_>MaxOccupancy_) | (good_region==0) | (Filter_(p)==false));
+	
 	p.RegionID = GetCurrentOrbitRegion();
 	p.AcquisitionTime = acq_time;
 	p.SatPosX = SatellitePosition[1];
 	p.SatPosY = SatellitePosition[2];
 	p.SatAltitude = SatellitePosition[0];
 	p.FrameOccupancy = occupancy_;
-	//cout<<acq_time<<endl;
-	if( (CurrentClusterEntry<ClusterFile_->GetEntries()) & (CurrentSatEntry<dscData_->GetEntries()))
-	{
-		
-		for(int j=0;j<size;j++)
-		{
-			auto t = PixelHit{static_cast<double>(x[j]), static_cast<double>(y[j]), ctime, energy[j]};
-			p.Insert(t);
-		}
-		return true;
-	}
 	
-	return false;
+	return true;
+	
 }
 void SATRAMFileReader::SetMaximumOccupancy(double NewMaxOccupancy)
 {
@@ -399,12 +390,18 @@ void BennyFileReader::UpdateFileInput(const string& ipFileName)
 		ParticleType = -1;
 	CurrentEntryNo=0;
 }
+
 bool BennyFileReader::AssignParticle(particle &p)
 {
 	
-	p.Clear();
-	if(CurrentEntryNo<Data_->GetEntries())
+	do
 	{
+		p.Clear();
+		if(CurrentEntryNo>=Data_->GetEntries())
+		{
+			Close();
+			return false;
+		}
 		Data_->GetEntry(CurrentEntryNo);
 		p.theta = theta * (M_PI/180); // deg -> Rad as required by algorithms
 		p.phi = phi * (M_PI/180);				  // deg -> Rad as required by algorithms
@@ -412,13 +409,12 @@ bool BennyFileReader::AssignParticle(particle &p)
 		p.ParticleType = ParticleType;
 		for(int j=0;j<size;j++)
 		{
-			//p.Insert(PixelHit{static_cast<double>(x[j]), static_cast<double>(y[j]), 0, energy[j]});
 			p.Insert(PixelHit{static_cast<double>(x[j]), static_cast<double>(y[j]), time[j], energy[j]});
 		}
 		CurrentEntryNo++;
-		return true;
 	}
-	return false;
+	while(Filter_(p)==false);
+	return true;
 }
 
 void BennyFileReader::Close() 
