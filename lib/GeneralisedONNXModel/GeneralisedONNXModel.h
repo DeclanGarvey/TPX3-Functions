@@ -20,8 +20,10 @@ class GeneralisedONNXModel
 		int64_t BatchSize_ = 1;
 		std::vector<int64_t> InputDims_;
 		std::vector<int64_t> OutputDims_;
-		std::vector<const char*> InputNames_;
-		std::vector<const char*> OutputNames_;
+		std::vector<std::string> InputNames_;
+		std::vector<std::string> OutputNames_;
+		std::vector<const char*> InputNamesChar_;
+		std::vector<const char*> OutputNamesChar_;
 	public:
 		GeneralisedONNXModel(const std::string& ModelPath);
 

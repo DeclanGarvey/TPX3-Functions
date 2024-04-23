@@ -42,10 +42,21 @@ GeneralisedONNXModel<OutputDataType>::GeneralisedONNXModel(const string& ModelPa
 		}
 		
 		Ort::AllocatorWithDefaultOptions allocator;
+		
 		for (std::size_t i = 0; i < Session_->GetInputCount(); i++)
 			InputNames_.emplace_back(Session_->GetInputNameAllocated(i, allocator).get());
 		for (std::size_t i = 0; i < Session_->GetOutputCount(); i++)
 			OutputNames_.emplace_back(Session_->GetOutputNameAllocated(i, allocator).get());
+		
+		InputNamesChar_ = std::vector<const char *>(InputNames_.size(), nullptr);
+        	OutputNamesChar_ = std::vector<const char *>(OutputNames_.size(), nullptr);
+        	std::transform(std::begin(InputNames_), std::end(InputNames_), std::begin(InputNamesChar_),
+                       [&](const std::string &str)
+                       { return str.c_str(); });
+
+        	std::transform(std::begin(OutputNames_), std::end(OutputNames_), std::begin(OutputNamesChar_),
+                       [&](const std::string &str)
+                       { return str.c_str(); });
 }
 
 
@@ -54,8 +65,8 @@ OutputDataType GeneralisedONNXModel<OutputDataType>::PredictFromFeatures(vector<
 {
 	vector<Ort::Value> InputTensor;
 	InputTensor.push_back(ValueToTensor<float>(*MemoryInfo_, Inputs, InputDims_));//MemoryInfo_??
-	std::vector<Ort::Value> Output = Session_->Run(Ort::RunOptions{nullptr}, InputNames_.data(), InputTensor.data(),
-                                      InputNames_.size(), OutputNames_.data(), OutputNames_.size());
+	std::vector<Ort::Value> Output = Session_->Run(Ort::RunOptions{nullptr}, InputNamesChar_.data(), InputTensor.data(),
+                                      InputNamesChar_.size(), OutputNamesChar_.data(), OutputNamesChar_.size());
 	return  *Output[0].GetTensorMutableData<OutputDataType>();
 }
 
