@@ -6,6 +6,7 @@
 
 #include "RandomForrestTheta.h"
 using namespace std;
+#include <iostream>
 
 
 
@@ -23,6 +24,9 @@ vector<float> RandomForrestTheta::CalculateInputFeatures(particle const& p)
 	vector<float> x{static_cast<float>(skel.GetSize()), static_cast<float>(BoxDim[0]), static_cast<float>(BoxDim[1]),
 			 static_cast<float>(BoxStds[1]), static_cast<float>(BoxStds[0]),
 			  LLMTheta};
+	//for(int i=0;i<x.size();i++)
+	//	cout<<x[i]<<" ";
+	//cout<<endl;
 	return x;
 }
 
