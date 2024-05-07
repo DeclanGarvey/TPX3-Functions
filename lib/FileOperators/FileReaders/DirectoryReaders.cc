@@ -3,6 +3,14 @@ using namespace std;
 #include <iostream>
 #include "DirectoryReaders.h"
 
+/*
+DirectoryReader iterates through all the files found in a directory at runtime outputing the File names within that directory
+*/
+
+
+/*
+Constructs the DirectoryReader that iterates through all the filenames found at location ipDirectoryName
+*/
 DirectoryReader::DirectoryReader(const string& ipDirectoryName)
 {
 	ipDirectoryName_=ipDirectoryName;
@@ -17,6 +25,10 @@ DirectoryReader::DirectoryReader(const string& ipDirectoryName)
     	}
     	
 }
+
+/*
+Reads the next file name found in the directory and assigns the file name to the variable FileName 
+*/
 bool DirectoryReader::AssignNextFile(string& FileName)
 {
 	do
@@ -35,6 +47,10 @@ bool DirectoryReader::AssignNextFile(string& FileName)
 	while((FileName==".") | (FileName==".."));
 	return true;
 }
+
+/*
+Brings the iterator back the begining of the directory allowing for another iteration through the file names
+*/
 void DirectoryReader::RestartIteration()
 {
 	if(FileExists)

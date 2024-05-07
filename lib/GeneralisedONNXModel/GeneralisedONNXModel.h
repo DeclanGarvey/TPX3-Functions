@@ -11,7 +11,7 @@ class GeneralisedONNXModel
 {
 	protected:
 		std::string EnvironmentName_ = "ONNXModel";
-	//private:
+	private:
 		std::unique_ptr<Ort::Env> Environment_;
 		std::unique_ptr<Ort::Session> Session_;
 		std::unique_ptr<Ort::MemoryInfo> MemoryInfo_;
@@ -32,18 +32,4 @@ class GeneralisedONNXModel
 		void AdjustBatchSize(int64_t BatchSize);
 		
 		virtual std::vector<float> CalculateInputFeatures(particle const& p) = 0;
-		// Explicitly delete copy constructor and copy assignment operator
-		/*GeneralisedONNXModel(const GeneralisedONNXModel&) = default;
-		GeneralisedONNXModel& operator=(const GeneralisedONNXModel&) =  = default;
-		*/
-		/*virtual ~GeneralisedONNXModel()
-		{
-			for (const char* name : InputNames_) 
-			    delete[] name; // Deallocate memory
-			for (const char* name : OutputNames_) 
-			    delete[] name; // Deallocate memory
-		}*/
-		
-		
-
 };

@@ -169,21 +169,21 @@ bool FeatFileWriter::AddParticle(particle const& p)
 {
 	if(p.IsEmpty()==false)
 	{
-		auto skel = Skeletonise(p, 0.626, -103.25);
+		//auto skel = Skeletonise(p, 0.626, -103.25);
 		//auto skel = Skeletonise(p,0,5);
-		auto rotated = RotateToNormal(skel);
+		auto rotated = RotateToNormal(p);
 		auto dims = BoxDimensions(rotated);
 		auto stds = WeightedBoxStds(rotated);
 		
-		auto dimsxy = BoxDimensions(skel);
+		auto dimsxy = BoxDimensions(p);
 		
-		double theta = ThetaImprovedLLM(skel, DetectorThickness_);
+		double theta = ThetaImprovedLLM(p, DetectorThickness_);
 		//double sp = StoppingPower(p.GetEnergy(), theta, DetectorThickness_); 
 		//double weight = FleunceContribution(theta, DetectorThickness_);
 		//int PrimarySize = Skeletonise(p,0.626,-103.75).GetSize();
 		
 		fprintf(opFile_, "%d %lf %lf %lf %lf %d %lf %d %lf %lf %lf %lf %lf %lf %d %lf %lf %lf %lf %lf\n",
-				 p.GetRegionID(), p.PrimaryEnergy, p.theta, p.phi, p.GetMinToA(), p.GetSize(), p.GetEnergy(),GetMorphologicalClass(p), theta, ThetaLineFit(skel, DetectorThickness_), stds[0], stds[1], dims[1], dims[0], skel.GetSize(), dimsxy[0],dimsxy[1], PhiLineFit(p), PhiTimeWeighted(skel),StandardDeviationEnergy(skel));		 
+				 p.GetRegionID(), p.PrimaryEnergy, p.theta, p.phi, p.GetMinToA(), p.GetSize(), p.GetEnergy(),GetMorphologicalClass(p), theta, ThetaLineFit(p, DetectorThickness_), stds[0], stds[1], dims[1], dims[0], p.GetSize(), dimsxy[0],dimsxy[1], PhiLineFit(p), PhiTimeWeighted(p),StandardDeviationEnergy(p));		 
 				 
 		return true;
 	}

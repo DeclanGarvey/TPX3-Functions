@@ -25,7 +25,7 @@ class particle
 		double phi=-1;
 		double theta=-1;
 		double StoppingPower=-1;
-		double AcquisitionTime=-1;
+		double AcquisitionTime=0;
 		int RegionID=-1;
 		double SatPosX=0;
 		double SatPosY=0;
@@ -60,4 +60,5 @@ class particle
 		void UpdateMorphologicalClass(int NewMorphologicalClass);
 		void UpdatePhi(double NewPhi);
 		void UpdateTheta(double NewTheta);
+		std::vector<double> GetCentroid() const;
 };

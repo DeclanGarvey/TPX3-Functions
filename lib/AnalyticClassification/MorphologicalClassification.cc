@@ -9,7 +9,7 @@ using namespace std;
 #include "MorphologicalClassification.h"
 
 //This function takes in particle class and outputs the Morphological classification based on T. Holy et al. “Pattern recognition of tracks induced by individual quanta of ionizing radiation in Medipix2 silicon detector”. In: Nuclear Instruments and Methods in Physics Research Section A: Accelerators, Spectrometers, Detectors and Associated Equipment 591.1 (2008). 
-//Updates to acconunt for some speical case scenarios
+//Updates to account for some speical case scenarios
 int GetMorphologicalClass(particle const& p)
 {
 	if(p.GetSize()>Dots::MaximumSize)

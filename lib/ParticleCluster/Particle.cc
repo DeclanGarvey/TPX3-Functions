@@ -60,30 +60,27 @@ vector<PixelHit> particle::GetCluster() const
 
 void particle::Clear()
 {
-	//if(size_>0)
-	//{
-		RegionID = 0.0;
-		sum_energy_=0.0;
-		height_=-1.0;
-		MinToAPixel_ = {-1,-1,-1,-1};
-		MaxToAPixel_ = {-1,-1,-1,-1};
-		size_=0.0;
-		sum_time = 0.0;
-		cluster_.clear();
-		edge_cluster_=false;
-		lefttopmost_ = {300,-1, -1,-1};
-		rightbottommost_ = {-1,300, -1,-1};
-		topleftmost_ = {300,-1, -1,-1};
-		bottomrightmost_ = {-1,300, -1,-1};
-		ParticleType=-1;
-		PrimaryEnergy=-1;
-		MorphologicalClass=-1;
-		phi=-1;
-		theta=-1;
-		StoppingPower=-1;
-		RegionID=-1;
-		AcquisitionTime=-1;
-	//}
+	RegionID = 0.0;
+	sum_energy_=0.0;
+	height_=-1.0;
+	MinToAPixel_ = {-1,-1,-1,-1};
+	MaxToAPixel_ = {-1,-1,-1,-1};
+	size_=0.0;
+	sum_time = 0.0;
+	cluster_.clear();
+	edge_cluster_=false;
+	lefttopmost_ = {300,-1, -1,-1};
+	rightbottommost_ = {-1,300, -1,-1};
+	topleftmost_ = {300,-1, -1,-1};
+	bottomrightmost_ = {-1,300, -1,-1};
+	ParticleType=-1;
+	PrimaryEnergy=-1;
+	MorphologicalClass=-1;
+	phi=-1;
+	theta=-1;
+	StoppingPower=-1;
+	RegionID=-1;
+	AcquisitionTime=0;
 }
 vector<PixelHit>::const_iterator particle::begin() const 
 {
@@ -182,5 +179,18 @@ void particle::UpdateTheta(double NewTheta)
 	theta=NewTheta;
 }
 
+vector<double> particle::GetCentroid() const
+{
+	vector<double> pos{0,0};
+	double InvEnergy = 1.0/sum_energy_;
+	double e_ratio;
+	for (auto i = cluster_.begin(); i != cluster_.end(); i++ ) 
+	{
+		e_ratio = i->energy * InvEnergy;
+		pos[0] += i->x*e_ratio;
+		pos[1] += i->y*e_ratio;
+	}
+	return pos;
+}
 
 

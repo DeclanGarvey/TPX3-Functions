@@ -15,13 +15,14 @@ using namespace std;
 
 #include "ParticleFileReaders.h"
 
+
 void ParticleFileReader::AddParticleFiltersFromConfig(const std::string& FilterConfig)
 {
 	Filter_=ParticleFilter(FilterConfig);
 }
-void ParticleFileReader::AddParticleFiltersFromConfig(ParticleFilter& Filter)
+void ParticleFileReader::AddParticleFilter(const ParticleFilter& Filter)
 {
-	Filter_ = ParticleFilter();
+	Filter_ = Filter;
 }
 void ParticleFileReader::AddParticleFilter(const std::string& VariableFilter, const std::string& Value)
 {
@@ -170,14 +171,14 @@ void SATRAMFileReader::UpdateFileInput(const string& ipFileName)
 	ClusterFile_->SetBranchAddress("Acq_time",&acq_time);
 	CurrentClusterEntry=0;
 	CurrentSatEntry=0;
-
 }
 
 bool SATRAMFileReader::AssignParticle(particle &p)
 {
-	p.Clear();
+	
 	do	
 	{
+		p.Clear();
 		if( (CurrentClusterEntry>=ClusterFile_->GetEntries()) | (CurrentSatEntry>=dscData_->GetEntries()))
 		{
 			Close();
@@ -200,17 +201,15 @@ bool SATRAMFileReader::AssignParticle(particle &p)
 			p.Insert(t);
 		}
 		CurrentClusterEntry++;
+		p.RegionID = GetCurrentOrbitRegion();
+		p.AcquisitionTime = acq_time;
+		p.SatPosX = SatellitePosition[1];
+		p.SatPosY = SatellitePosition[2];
+		p.SatAltitude = SatellitePosition[0];
+		p.FrameOccupancy = occupancy_;
 	}while((occupancy_<MinOccupancy_) |(occupancy_>MaxOccupancy_) | (good_region==0) | (Filter_(p)==false));
 	
-	p.RegionID = GetCurrentOrbitRegion();
-	p.AcquisitionTime = acq_time;
-	p.SatPosX = SatellitePosition[1];
-	p.SatPosY = SatellitePosition[2];
-	p.SatAltitude = SatellitePosition[0];
-	p.FrameOccupancy = occupancy_;
-	
 	return true;
-	
 }
 void SATRAMFileReader::SetMaximumOccupancy(double NewMaxOccupancy)
 {
