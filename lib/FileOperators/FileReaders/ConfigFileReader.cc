@@ -5,6 +5,18 @@ using namespace std;
 
 #include "ConfigFileReader.h"
 
+/*
+ConfigFileReader a particular text file type where you it reads in each line in the following format
+VariableName: VariableValue
+
+anything on a line following a "#" is ignored as a comment
+*/
+
+
+
+/*
+Constructs the ConfigFileReader object by opening the text file found at the location ipFileName
+*/
 ConfigFileReader::ConfigFileReader(string const& ipFileName)
 {
 	ipFile.open(ipFileName);
@@ -12,6 +24,10 @@ ConfigFileReader::ConfigFileReader(string const& ipFileName)
 		cerr<<"Read Error: Config file could not be opened."<<endl;
 }
 
+
+/*
+Reads the next line fo the text file
+*/
 bool ConfigFileReader::ProcessNextVariable()
 {
 	string CommentRemovedLine; 
@@ -41,17 +57,31 @@ bool ConfigFileReader::ProcessNextVariable()
 	return true;
 }
 
+/*
+Returns the VariableName of the current line in the config text file
+*/
 const string& ConfigFileReader::GetCurrentVariableName()
 {
 	return VariableName;
 }
 
-
+/*
+Returns the VariableValue of the current line in the config text file
+*/
 const string& ConfigFileReader::GetCurrentVariableValue()
 {
 	return VariableValue;
 }
 
+/*
+Constructs and returns a string vector from the VariableValue
+used when VariableVale is of the form
+%s,%s,%s,...
+or 
+%s %s %s ...
+
+the specific seperator type is whatever is found VariableValue
+*/
 const std::vector<string>& ConfigFileReader::GetCurrentVariableAsVector()
 {
 	if(VariableValueVector.empty())
@@ -73,6 +103,15 @@ const std::vector<string>& ConfigFileReader::GetCurrentVariableAsVector()
 	return VariableValueVector;
 }
 
+/*
+Constructs and returns a string vector from the VariableValue
+used when VariableVale is of the form
+%s,%s,%s,...
+or 
+%s %s %s ...
+
+the specific seperator type is take as input all other seperator types are not detected
+*/
 const std::vector<string>& ConfigFileReader::GetCurrentVariableAsVector(char Seperator)
 {
 	if(VariableValueVector.empty())

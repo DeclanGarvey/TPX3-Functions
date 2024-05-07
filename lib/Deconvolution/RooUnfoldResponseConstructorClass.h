@@ -12,7 +12,7 @@ class RooUnfoldResponseConstructorClass
 		map<int,int> ParticleTypeToParamPosition;
 		
 		
-		int NoStoppingPowerBins = 108;
+		int NoStoppingPowerBins = 54;//108;
 		double MinStoppingPower = 3.0;
 		double MaxStoppingPower = 30.0;
 		double StoppingPowerBinWidth;

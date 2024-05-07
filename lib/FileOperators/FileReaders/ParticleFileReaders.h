@@ -33,7 +33,7 @@ class ParticleFileReader
 			}
 		}
 		void AddParticleFiltersFromConfig(const std::string& FilterConfig);
-		void AddParticleFiltersFromConfig(ParticleFilter& Filter);
+		void AddParticleFilter(const ParticleFilter& Filter);
 		void AddParticleFilter(const std::string& VariableFilter, const std::string& Value);
 		
 		virtual bool AssignParticle(particle& p){return false;};
@@ -96,7 +96,7 @@ class SATRAMFileReader : public ParticleFileReader
 	TFile* File_=nullptr;
 	TTree*  dscData_=nullptr;
 	TTree* ClusterFile_=nullptr;
-	double MaxOccupancy_=5;
+	double MaxOccupancy_=25;
 	double MinOccupancy_ = 0;
 	int CurrentClusterEntry;
 	int CurrentSatEntry;

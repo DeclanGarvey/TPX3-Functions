@@ -29,14 +29,14 @@ void Deconvolution(const string& ResponseFileName, const string& ipDirectory, co
 
 void DeconvolutionDirectory(const string& ResponseFileName, const string& ipDirectory, const string& opDirectory, double DetectorThickness, int RegionID)
 {	
-	RooUnfoldResponse* response = new RooUnfoldResponse();
+	RooUnfoldResponse* response;
 	TFile* f = new TFile(ResponseFileName.c_str(), "READ");
 	f->Print();
 	f->GetObject("Response", response);
 	f->Close();
-	f = nullptr;
-	auto Matrix = response->Hresponse();	
-	double NoStoppingPowerBins = Matrix->GetNbinsX();
+	delete f;
+	TH2* Matrix = response->Hresponse();	
+	int NoStoppingPowerBins = Matrix->GetNbinsX();
 	double MinStoppingPowerBin = Matrix->GetXaxis()->GetXmin();
 	double MaxStoppingPowerBin = Matrix->GetXaxis()->GetXmax();
 	
@@ -48,12 +48,12 @@ void DeconvolutionDirectory(const string& ResponseFileName, const string& ipDire
 	auto Dir = DirectoryReader(ipDirectory);
 	while(Dir.AssignNextFile(ipFileName))
 	{
-		if(GetFileType(ipFileName)==6)
+		if(CheckFileType(ipFileName, 5))
 		{
 			cout<<"Processing: " << ipFileName<<endl;
 			auto reader = StoppingPowerFileReader(ipDirectory+ipFileName, RegionID);
 			
-			reader.SetMaximumFrameAcquisitionTime(0.01);// !!!!! This is only applicable to the SAA !!!!!!!!
+			reader.SetMaximumFrameAcquisitionTime(0.02);// !!!!! This is only applicable to the SAA !!!!!!!!
 			
 			while(reader.ReadNextEntry())
 			{
@@ -92,11 +92,12 @@ void DeconvolutionDirectory(const string& ResponseFileName, const string& ipDire
 	{
 		Measured->SetBinError(i, PoissonError->At(i) + Measured->GetBinContent(i)*0.13);
 	}*/
-	RooUnfoldBayes unfold(&(*response), Measured);
-	//unfold.smooth();
+	RooUnfoldBayes unfold(response, Measured);
+	
 	TH1D* hUnfold = (TH1D*) unfold.Hunfold(RooUnfolding::kCovariance);
+	//hUnfold->Scale(1.0,"WIDTH");
 	auto CovMatrixDiag = unfold.EunfoldV(RooUnfolding::kCovariance);
-	//auto CovMatrix = errorMatrix * errorMatrix.T();
+	
 	FILE* UnfoldFile;
 	UnfoldFile = fopen((opDirectory +"_unfold.txt").c_str(),"w");
 	PrintHistogram(UnfoldFile, hUnfold);
@@ -122,24 +123,24 @@ void DeconvolutionDirectory(const string& ResponseFileName, const string& ipDire
 	}
 	fclose(HistFile);
 	
-	TCanvas *c = new TCanvas("test","test");
+	TCanvas c("test","test");
 	Matrix->Draw("COLZ");
 	Matrix->SetStats(0);
-	c->Update();
-	c->SaveAs("test1.png");
+	c.Update();
+	c.SaveAs("test1.png");
 	
 	gPad->SetLogy();
 	Measured->Draw("E1");
 	Measured->SetStats(0);
-	c->Update();
-	c->SaveAs("test3.png");
+	c.Update();
+	c.SaveAs("test3.png");
 
 	
 	gPad->SetLogy();
 	hUnfold->Draw("E1");
 	hUnfold->SetStats(0);
-	c->Update();
-	c->SaveAs("test2.png");
+	c.Update();
+	c.SaveAs("test2.png");
 	
 	cout<<endl<<endl;;
 	cout<<"==============================================="<<endl;
@@ -148,7 +149,10 @@ void DeconvolutionDirectory(const string& ResponseFileName, const string& ipDire
 	for(auto& it : FrameAcquisitionTimeHistory)
 		cout<<it.first<< ", "<< it.second<<endl;
 	
-		
+	
 	cout<<endl<<"=>Effective Measurment Time: "<< TotalAcquisitionTime<<endl<<endl;
+	response->ClearCache();
+	delete response;
+	delete Measured;
 }
 

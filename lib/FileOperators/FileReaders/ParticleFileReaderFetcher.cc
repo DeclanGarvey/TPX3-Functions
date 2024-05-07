@@ -4,7 +4,11 @@ using namespace std;
 #include "FileNames.h"
 #include "ParticleFileReaderFetcher.h"
 
-
+/*
+Creates a particular instance of particle file reader 
+	ipFileName: Specifies the location of the filename that intended to read
+	ipFileType: Specifies partcular type of file reader needed if set to -1, code attempts to detect file type based of on file name ending, Note: doesn't work SATRAM and Benny filetypes
+*/
 unique_ptr<ParticleFileReader> GetFileReader(const string& ipFileName, int ipFileType)
 {
 	if(ipFileType==-1)
@@ -33,6 +37,9 @@ unique_ptr<ParticleFileReader> GetFileReader(const string& ipFileName, int ipFil
 	return make_unique<ParticleFileReader>();
 }
 
+/*
+Creates an empty particle file reader the particular type of file reader is specified by ipFileType
+*/
 unique_ptr<ParticleFileReader> GetEmptyFileReader(int ipFileType)
 {
 	switch(ipFileType)

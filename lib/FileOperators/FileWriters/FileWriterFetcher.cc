@@ -8,6 +8,15 @@ using namespace std;
 
 #include "FileWriterFetcher.h"
 
+
+/*
+Creates a particular instance of particle file writer 
+	opFileName: Specifies the location were the you wish to write the file to
+	FileType: Specifies partcular type of file writer needed if set to -1, code attempts to detect file type based of on file name ending
+	DetectorThickness:
+	ModelPath: Specifies the path to the ML model you wish to calculate theta with (must a .onnx file), set to "" empty if you wish to implement no ML in File writing, NOTE: not all filetype have
+		   a corresponding ML implementation
+*/
 unique_ptr<ParticleFileWriter> GetFileWriter(const string& opFileName, int FileType, double DetectorThickness, const string& ModelPath)
 {
 	if(FileType==-1)
@@ -56,7 +65,14 @@ unique_ptr<ParticleFileWriter> GetFileWriter(const string& opFileName, int FileT
 	}
 	return make_unique<ParticleFileWriter>();
 }
+/*
+Creates an empty particle file writir the particular type of file writer
 
+	FileType: Specifies partcular type of file writer needed if set to -1, code attempts to detect file type based of on file name ending
+	DetectorThickness:
+	ModelPath: Specifies the path to the ML model you wish to calculate theta with (must a .onnx file), set to "" empty if you wish to implement no ML in File writing, NOTE: not all filetype have
+		   a corresponding ML implementation
+*/
 unique_ptr<ParticleFileWriter> GetEmptyFileWriter(int FileType, double DetectorThickness, const string& ModelPath)
 {
 	if(ModelPath.empty())

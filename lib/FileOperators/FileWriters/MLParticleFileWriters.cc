@@ -77,7 +77,6 @@ bool HighZSearchFileWriter::AddParticle(particle const& p)
 		
 		double theta = ThetaModel->PredictFromParticle(p);
 		double phi = PhiTimeWeighted(skel);//Skeletonise(p,0.0,5));
-		double phi2 = PhiLineFit(p);
 		
 		auto rotated = RotateToNormal(p);
 		//auto dims = BoxDimensions(rotated);

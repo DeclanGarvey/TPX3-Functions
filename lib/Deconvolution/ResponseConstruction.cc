@@ -16,11 +16,19 @@ using namespace::std;
 #include "RooUnfoldResponseConstructorClass.h"
 #include "ResponseConstruction.h"
 
-void ConstructResponse(const string&  ipDirectory, const string&  opDirectory,  const string& ConfigurationDirectory, double DetectorThickness)
+/*
+Function that takes in the input filename, output directory, configuration directory, and detector thickness
+
+Using the configuration(default parameters if ConfigurationDirectory is empty) and the data provided at ipFileName creates a Stopping Power-Primary Energy BayesResponse Matrix.
+The created Response matrix is than saved to opDirectory
+
+This functions is used for a single file of data
+*/
+void ConstructResponse(const string&  ipFileName, const string&  opDirectory,  const string& ConfigurationDirectory, double DetectorThickness)
 {	
 	RooUnfoldResponseConstructorClass Constructor(ConfigurationDirectory);
 	
-	Constructor.AddFile(ipDirectory, DetectorThickness);
+	Constructor.AddFile(ipFileName, DetectorThickness);
 	
 	RooUnfoldResponse r = Constructor.GetRooUnfoldResponse();
 	TFile* f = new TFile(opDirectory.c_str(), "RECREATE");
@@ -29,6 +37,23 @@ void ConstructResponse(const string&  ipDirectory, const string&  opDirectory,  
 	f->Close();
 }
 
+/*
+Function that takes in the input directory, output directory, configuration directory, and detector thickness
+
+Using the configuration(default parameters if ConfigurationDirectory is empty) and the data provided at ipDirectory creates a Stopping Power-Primary Energy BayesResponse Matrix.
+The created Response matrix is than saved to opDirectory
+
+This function is used for a directory of files of data typically in strurture
+ParticleType1
+	->ParticleType1DataFile1
+	->ParticleType1DataFile2
+	...
+ParticleType2
+	->ParticleType2DataFile1
+	->ParticleType2DataFile2
+	...
+...
+*/
 void ResponseConstructionFromDirectory(const string&  ipDirectory, const string&  opDirectory,  const string& ConfigurationDirectory, double DetectorThickness)
 {
 	RooUnfoldResponseConstructorClass Constructor(ConfigurationDirectory);
@@ -41,7 +66,7 @@ void ResponseConstructionFromDirectory(const string&  ipDirectory, const string&
 		string ipFileName;
 		while(dir->AssignNextFile(ipFileName))
 		{
-			if(GetFileType(ipFileName)==6)
+			if(CheckFileType(ipFileName, 5))
 			{
 				cout<<"Processing: "<<ipFileName<<endl;
 				Constructor.AddFile(ipDirectory + "/"+ParticleFileName+"/"+ipFileName,DetectorThickness);
@@ -56,6 +81,9 @@ void ResponseConstructionFromDirectory(const string&  ipDirectory, const string&
 	f->Close();
 }
 
+/*
+Takes in the file name of the Response Matrix and saves root graph of the response to matrix to the directory provided by ResponseMatrixImageSaveDirectory
+*/
 void PrintUnfoldingMatrix(const string& ResponseFileName, const string& ResponseMatrixImageSaveDirectory)
 {
 	RooUnfoldResponse* response = new RooUnfoldResponse();

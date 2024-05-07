@@ -3,12 +3,23 @@
 #include <iostream>
 #include <algorithm>
 #include "Particle.h"
-#include "AngleCalulationFunctions.h"
 #include "ClusterFeatures.h"
 
 #include "GeneralisedONNXModel.h"
 using namespace std;
 
+/*
+This the generalised version of object used to read and use ML models saved as .onnx files through this project
+*/
+
+
+/*
+Takes in a std::vector and converts it to an ORT::Value vector as output which can be input into an ONNX model
+
+	MemInfo: ONNX memory allocation and management (consult ONNX documentation)
+	data: the vector that will be converted to ORT::Value
+	shape: the shape of the vector to be output
+*/
 template <typename T>
 Ort::Value ValueToTensor(const Ort::MemoryInfo& MemInfo , std::vector<T> &data, const std::vector<int64_t> &shape)
 {
@@ -16,7 +27,10 @@ Ort::Value ValueToTensor(const Ort::MemoryInfo& MemInfo , std::vector<T> &data, 
 	return tensor;
 }
 
-
+/*
+Constructs the onnx model and necessary variables
+	ModelPath specifies the location the ML .onnx model is saved
+*/
 template <typename OutputDataType>
 GeneralisedONNXModel<OutputDataType>::GeneralisedONNXModel(const string& ModelPath)
 {
@@ -59,7 +73,10 @@ GeneralisedONNXModel<OutputDataType>::GeneralisedONNXModel(const string& ModelPa
                        { return str.c_str(); });
 }
 
-
+/*
+Take in the vector of inputs used by the ML model and outputs the prediction
+NOTE: The shape of the input depends of the particular that was loaded on construction
+*/
 template<typename OutputDataType>
 OutputDataType GeneralisedONNXModel<OutputDataType>::PredictFromFeatures(vector<float> Inputs)
 {
@@ -70,6 +87,9 @@ OutputDataType GeneralisedONNXModel<OutputDataType>::PredictFromFeatures(vector<
 	return  *Output[0].GetTensorMutableData<OutputDataType>();
 }
 
+/*
+Takes in a particle and outputs the prediction of the model
+*/
 template<typename OutputDataType>
 OutputDataType GeneralisedONNXModel<OutputDataType>::PredictFromParticle(particle const& p)
 {
@@ -78,6 +98,9 @@ OutputDataType GeneralisedONNXModel<OutputDataType>::PredictFromParticle(particl
 	return Outputs;
 }
 
+/*
+Allows for the adjusting of Batch size
+*/
 template<typename OutputDataType>
 void GeneralisedONNXModel<OutputDataType>::AdjustBatchSize(int64_t BatchSize)
 {
