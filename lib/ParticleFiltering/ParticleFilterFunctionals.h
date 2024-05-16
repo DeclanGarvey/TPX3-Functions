@@ -17,8 +17,12 @@ std::function<bool(particle&)> CreateMinimumPrimaryEnergyFilter(double MinimumPr
 std::function<bool(particle&)> CreateMaximumPrimaryEnergyFilter(double MaximumPrimaryEnergy);
 std::function<bool(particle&)> CreateMinimumThetaFilter(std::string MinimumThetaInfo);
 std::function<bool(particle&)> CreateMaximumThetaFilter(std::string MaximumThetaInfo);
+std::function<bool(particle&)> CreateMinimumPredictedThetaFilter(std::string MinimumThetaInfo);
+std::function<bool(particle&)> CreateMaximumPredictedThetaFilter(std::string MaximumThetaInfo);
 std::function<bool(particle&)> CreateMinimumPhiFilter(std::string MinimumPhiInfo);
 std::function<bool(particle&)> CreateMaximumPhiFilter(std::string MaximumPhiInfo);
+std::function<bool(particle&)> CreateMinimumPredictedPhiFilter(std::string MinimumPhiInfo);
+std::function<bool(particle&)> CreateMaximumPredictedPhiFilter(std::string MaximumPhiInfo);
 std::function<bool(particle&)> CreateMorphologicalClassFilter(int MorphologicalClass);
 std::function<bool(particle&)> CreateRegionIDFilter(int RegionID);
 std::function<bool(particle&)> CreateMinimumStoppingPowerFilter(std::string MinimumStoppingPowerInfo);
