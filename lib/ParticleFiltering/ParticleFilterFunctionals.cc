@@ -35,10 +35,18 @@ function<bool(particle& p)> GetFilter(const string& FilterName, const string& Fi
 		return CreateMinimumThetaFilter(FilterValue);
 	else if(FilterName=="MaximumTheta")
 		return CreateMaximumThetaFilter(FilterValue);
+	else if(FilterName=="MinimumPredictedTheta")
+		return CreateMinimumPredictedThetaFilter(FilterValue);
+	else if(FilterName=="MaximumPredictedTheta")
+		return CreateMaximumPredictedThetaFilter(FilterValue);
 	else if(FilterName=="MinimumPhi")
 		return CreateMinimumPhiFilter(FilterValue);
 	else if(FilterName=="MaximumPhi")
 		return CreateMaximumPhiFilter(FilterValue);
+	else if(FilterName=="MinimumPredictedPhi")
+		return CreateMinimumPredictedPhiFilter(FilterValue);
+	else if(FilterName=="MaximumPredictedPhi")
+		return CreateMaximumPredictedPhiFilter(FilterValue);
 	else if(FilterName=="MorphologicalClass")
 		return CreateMorphologicalClassFilter(stoi(FilterValue));
 	else if(FilterName=="RegionID")
@@ -183,6 +191,45 @@ function<bool(particle&)> CreateMaximumThetaFilter(string MaximumThetaInfo)
 	};
 }
 
+function<bool(particle&)> CreateMinimumPredictedThetaFilter(string MinimumThetaInfo)
+{
+	size_t DelimiterPos = MinimumThetaInfo.find("@");
+	double MinimumTheta;
+	double DetectorThickness=0.05;
+	if(DelimiterPos!=string::npos)
+	{
+		MinimumTheta = stod(MinimumThetaInfo.substr(0, DelimiterPos));
+		DetectorThickness = stod(MinimumThetaInfo.substr(DelimiterPos + 1));
+	}
+	else 
+		MinimumTheta = stod(MinimumThetaInfo);
+	return [MinimumTheta,DetectorThickness](particle& p)
+	{
+		p.theta = ThetaImprovedLLM(p, DetectorThickness);
+		return p.theta>=MinimumTheta;
+	};
+}
+
+
+function<bool(particle&)> CreateMaximumPredictedThetaFilter(string MaximumThetaInfo)
+{
+	size_t DelimiterPos = MaximumThetaInfo.find("@");
+	double MaximumTheta;
+	double DetectorThickness=0.05;
+	if(DelimiterPos!=string::npos)
+	{
+		MaximumTheta = stod(MaximumThetaInfo.substr(0, DelimiterPos));
+		DetectorThickness = stod(MaximumThetaInfo.substr(DelimiterPos + 1));
+	}
+	else 
+		MaximumTheta = stod(MaximumThetaInfo);
+	return [MaximumTheta,DetectorThickness] (particle& p)
+	{
+		p.theta = ThetaImprovedLLM(p, DetectorThickness);
+		return p.theta<=MaximumTheta;
+	};
+}
+
 function<bool(particle&)> CreateMinimumPhiFilter(string MinimumPhiInfo)
 {
 	size_t DelimiterPos = MinimumPhiInfo.find("@");
@@ -223,7 +270,44 @@ function<bool(particle&)> CreateMaximumPhiFilter(string MaximumPhiInfo)
 		return p.phi<=MaximumPhi;
 	};
 }
+function<bool(particle&)> CreateMinimumPredictedPhiFilter(string MinimumPhiInfo)
+{
+	size_t DelimiterPos = MinimumPhiInfo.find("@");
+	double MinimumPhi;
+	double DetectorThickness=0.05;
+	if(DelimiterPos!=string::npos)
+	{
+		MinimumPhi = stod(MinimumPhiInfo.substr(0, DelimiterPos));
+		DetectorThickness = stod(MinimumPhiInfo.substr(DelimiterPos + 1));
+	}
+	else 
+		MinimumPhi = stod(MinimumPhiInfo);
+	return [MinimumPhi,DetectorThickness] (particle& p)
+	{
+		p.phi = PhiTimeWeighted(p);
+		return p.phi>=MinimumPhi;
+	};
+}
 
+
+function<bool(particle&)> CreateMaximumPredictedPhiFilter(string MaximumPhiInfo)
+{
+	size_t DelimiterPos = MaximumPhiInfo.find("@");
+	double MaximumPhi;
+	double DetectorThickness=0.05;
+	if(DelimiterPos!=string::npos)
+	{
+		MaximumPhi = stod(MaximumPhiInfo.substr(0, DelimiterPos));
+		DetectorThickness = stod(MaximumPhiInfo.substr(DelimiterPos + 1));
+	}
+	else 
+		MaximumPhi = stod(MaximumPhiInfo);
+	return [MaximumPhi,DetectorThickness] (particle& p)
+	{
+		p.phi = PhiTimeWeighted(p);
+		return p.phi<=MaximumPhi;
+	};
+}
 function<bool(particle&)> CreateMorphologicalClassFilter(int MorphologicalClass)
 {
 	return [MorphologicalClass](particle& p)

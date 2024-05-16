@@ -269,6 +269,7 @@ double FieldTrackingFileWriter::ThetaCalculationMethod(particle const& p)
 {
 	return ThetaImprovedLLM(p, DetectorThickness_);
 }
+
 bool FieldTrackingFileWriter::AddParticle(particle const& p)
 {
 	if(p.IsEmpty()==false)
@@ -276,7 +277,10 @@ bool FieldTrackingFileWriter::AddParticle(particle const& p)
 		int MorphClass = GetMorphologicalClass(p);
 		double theta = ThetaCalculationMethod(p);
 		double phi = PhiTimeWeighted(p);
-		fprintf(opFile_, "%lf %d %d %f %lf %lf %lf\n", p.GetMinToA(), MorphClass, p.GetSize(), p.GetEnergy(), theta, phi, ThetaImprovedLLM(p, DetectorThickness_));
+		auto cen = p.GetCentroid();
+		
+		fprintf(opFile_, "%lf %lf %d %d %lf %lf %lf %lf %lf %d %lf\n", p.GetMinToA(), p.PrimaryEnergy, GetMorphologicalClass(p),
+								 p.GetSize(),p.GetEnergy(),p.GetHeight(), theta, phi, ThetaImprovedLLM(skel, DetectorThickness_), cen[0], cen[1]);
 		return true;
 	}
 	else 
