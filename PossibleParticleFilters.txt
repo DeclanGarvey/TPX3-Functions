@@ -1,0 +1,47 @@
+These are the list of possible of particle filters that can be implement in the function ./bin/FileConvertor by using using the flag -c <filename>
+<filename> indicates the location of a config file of the form
+ParticleFilter=ParticleFilterValue
+
+NOTE: the filters should be ordered in order of computational intensity from least to most as the filters are implmement consecutively
+
+
+Possible cluster filter are as follows:
+
+	MinimumSize: Minimum number of pixels in the cluster
+	MaximumSize: Maximum number of pixels in the cluster
+	MinimumEnergy: Minimum total energy deposition of the cluster
+	MaximumEnergy: Maximum total energy deposition of the cluster
+	MinimumHeight: Minimum of value of the maximum energy deposition recorded in a single pixel
+	MaximumHeight: Maximum of value of the maximum energy deposition recorded in a single pixel
+	PrimaryEnergy: Only particles with a particular labelled primary energy value
+	MinimumPrimaryEnergy: Paritcles with a mimimum labelled primary energy value
+	MaximumPrimaryEnergy: Paritcles with a maximum labelled primary energy value
+	MinimumTheta: Minimum labelled theta incidence of the particle, defaults 0.05 cm thickness for prediction but otherwised specified thickness for predictions in the form
+			MinimumTheta=<MinimumThetaValue>@<detectorthickness 
+			such as, MinimumTheta=0.1@0.03
+	MaximumTheta: Minimum labelled theta incidence of the particle, defaults 0.05 cm thickness for prediction but otherwised specified thickness for predictions in the form
+			MaximumTheta=<MaximumThetaValue>@<detectorthickness 
+			such as, MaximumTheta=0.1@0.03
+	MinimumPredictedTheta: Minimum predicted theta incidence using the improved LLM algorithm
+	MaximumPredictedTheta: Maximum predicted theta incidence using the improved LLM algorithm
+	MinimumPhi: Minimum labelled phi incidence of the particle
+	MaximumPhi: Maximum labelled phi incidence of the particle
+	MinimumPredictedPhi: Minimum predicted phi incidence using the ToA weighted averaging method
+	MaximumPredictedPhi: Maximum predicted phi incidence using the ToA weighted averaging method
+	MorphologicalClass: Only clusters of a particular morphological class
+			(0:dot, 1:small blob, 2: heavy blob, 3: heavy track, 4: straight track, 5: curly track, 6: LIPs at low theta angle, 7:MeIPs at low theta angle)
+	RegionID: Only paricles with a particular labelled region ID
+	MinimumStoppingPower: Minimum predicted stopping power value using the improved LLM algorithm and assuming full pentration of the particle through the thickness of the detector, 
+				defaults 0.05 cm thickness for prediction but otherwised specified thickness for predictions in the form
+				MinimumStoppingPower=0.8@0.05	
+	MaximumStoppingPower: Maximum predicted stopping power value using the improved LLM algorithm and assuming full pentration of the particle through the thickness of the detector, 
+				defaults 0.05 cm thickness for prediction but otherwised specified thickness for predictions in the form
+				MaximumStoppingPower=100@0.05	
+	MinimumEndPoints: Minimum number of end point pixels in the cluster, end points are defined as 8-fold nearest neighbour less than or equal to 3 and tranisition value 1
+	MaximumEndPoints: Maximum number of end point pixels in the cluster, end points are defined as 8-fold nearest neighbour less than or equal to 3 and tranisition value 1
+	RemoveMorphologicalClass: Removes all particles of a particular morphological class
+					(0:dot, 1:small blob, 2: heavy blob, 3: heavy track, 4: straight track, 5: curly track, 6: LIPs at low theta angle, 7:MeIPs at low theta angle)
+	RemoveLIPs: Removes all Lowly Ionising Particles(LIPs), defined by (energy deposition) < (pixel size)*17 + 500
+	RemoveMeIPs: Removes all Mediumly Ionising Particles(MeIPs), defined by (energy deposition) > (pixel size)*17 + 500
+			NOTE: this allow removes highly ionising particles will need a more update version to identify such particles
+	MaximumAcquisitionTime: Removes all particles obtained from a frame with acquisition time greater than the particular value, only relevent for frame based acquisition mode

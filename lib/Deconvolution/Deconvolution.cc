@@ -6,6 +6,7 @@ using namespace::std;
 #include "TFile.h"
 #include "TH1D.h"
 #include "TCanvas.h"
+//#include "TArray.h"
 
 #include "RooUnfoldResponse.h"
 #include "RooUnfoldBayes.h"
@@ -57,7 +58,6 @@ void DeconvolutionDirectory(const string& ResponseFileName, const string& ipDire
 			
 			while(reader.ReadNextEntry())
 			{
-				//double weight = FleunceContribution(reader.GetTheta(), DetectorThickness);
 				Measured->Fill(reader.GetStoppingPower(), 1);//weight);//
 			}
 			TotalAcquisitionTime+=reader.GetTotalAcquisitionTime();
@@ -71,44 +71,27 @@ void DeconvolutionDirectory(const string& ResponseFileName, const string& ipDire
 			reader.Close();
 		}
 	}
-	/*int NBins=Measured->GetNbinsX();
-	auto PoissonError = Measured->GetSumw2(); 
-	if(TotalAcquisitionTime!=0)
-	{
-		for(int i=0;i<=NBins;i++)
-			Measured->SetBinContent(i,Measured->GetBinContent(i)/TotalAcquisitionTime);
-	}
-	
-	
-	for (int i = 0; i <=NBins; i++)
-	{
-		Measured->SetBinError(i, PoissonError->At(i)/TotalAcquisitionTime + Measured->GetBinContent(i)*0.13);
-	}*/
 	if(TotalAcquisitionTime!=0)
 		Measured->Scale(1.0/TotalAcquisitionTime);
-	//auto PoissonError = Measured->GetSumw2(); 
+		
 	int NBins=Measured->GetNbinsX();
-	/*for (int i = 1; i <= NBins; i++)
-	{
-		Measured->SetBinError(i, PoissonError->At(i) + Measured->GetBinContent(i)*0.13);
-	}*/
+
 	RooUnfoldBayes unfold(response, Measured);
-	
 	TH1D* hUnfold = (TH1D*) unfold.Hunfold(RooUnfolding::kCovariance);
-	//hUnfold->Scale(1.0,"WIDTH");
+	hUnfold->Scale(1.0,"WIDTH");
 	auto CovMatrixDiag = unfold.EunfoldV(RooUnfolding::kCovariance);
 	
 	FILE* UnfoldFile;
 	UnfoldFile = fopen((opDirectory +"_unfold.txt").c_str(),"w");
-	PrintHistogram(UnfoldFile, hUnfold);
+	//PrintHistogram(UnfoldFile, hUnfold);
 	NBins=hUnfold->GetNbinsX();
 	double statisticalError = CovMatrixDiag(1);
-	
-	fprintf(UnfoldFile, "%lf", statisticalError);
-	for (int i = 2; i <= NBins; i++)
+	fprintf(UnfoldFile, "Flux FluxError\n");
+	for (int i = 1; i <= NBins; i++)
 	{
 		statisticalError = CovMatrixDiag(i);///TotalAcquisitionTime;
-		fprintf(UnfoldFile, ",%lf", statisticalError);
+		
+		fprintf(UnfoldFile, "%lf %lf\n", hUnfold->GetBinContent(i),statisticalError);
 	}
 	fclose(UnfoldFile);
 	

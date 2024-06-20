@@ -26,12 +26,9 @@ endif()
 #find_library(ONNX_NAME onnxruntime PATHS /usr/local/lib)
 #find_path(ONNX_INCLUDE_DIR onnxruntime)
 #if(ONNX_INCLUDE_DIR)
-
+#
 #	add_executable(MLClassifier MLClassifier.cc)
 #	target_link_libraries(MLClassifier PRIVATE MLClassification)
 #	target_link_libraries(MLClassifier PRIVATE FileNames)
 #	set_target_properties(MLClassifier PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../bin")
 #endif()
-
-#add_executable(MLTracking MLTracking.cc)
-#target_link_libraries(MLTracking PRIVATE MLParticleTracking)
