@@ -27,7 +27,7 @@ unique_ptr<ParticleFileReader> GetFileReader(const string& ipFileName, int ipFil
 		case 3:
 			return make_unique<SimFileReader>(ipFileName);
 			break;
-		case 9:
+		case 8:
 			return make_unique<BennyFileReader>(ipFileName);
 			break;
 		default:
@@ -56,7 +56,7 @@ unique_ptr<ParticleFileReader> GetEmptyFileReader(int ipFileType)
 		case 3:
 			return make_unique<SimFileReader>();
 			break;
-		case 9:
+		case 8:
 			return make_unique<BennyFileReader>();
 			break;
 		default:

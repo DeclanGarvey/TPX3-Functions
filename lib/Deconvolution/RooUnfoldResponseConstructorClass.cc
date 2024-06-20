@@ -142,7 +142,7 @@ void RooUnfoldResponseConstructorClass::AddFile(const string& ipFileName, double
 	auto reader = new StoppingPowerFileReader(ipFileName, -2);
 	while(reader->ReadNextEntry())
 	{
-		//double weight = FleunceContribution(reader->GetTheta(), DetectorThickness);
+		//double weight = EnergyBin FleunceContribution(reader->GetTheta(), DetectorThickness);
 		AddEntry(reader->GetParticleType(), reader->GetPrimaryEnergy(), reader->GetStoppingPower(),1);// weight);
 	}
 	

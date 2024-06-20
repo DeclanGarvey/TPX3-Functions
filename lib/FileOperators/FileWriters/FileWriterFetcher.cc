@@ -55,9 +55,6 @@ unique_ptr<ParticleFileWriter> GetFileWriter(const string& opFileName, int FileT
 			case 7:
 				return make_unique<MLFieldTrackingFileWriter>(opFileName, DetectorThickness, ModelPath);
 				break;
-			case 8:
-				return make_unique<HighZSearchFileWriter>(opFileName, DetectorThickness, ModelPath);
-				break;
 			default:
 				cout<<FileType<<" is an unknown ML data type(6:_sp.txt)"<<endl;
 				break;
@@ -108,9 +105,6 @@ unique_ptr<ParticleFileWriter> GetEmptyFileWriter(int FileType, double DetectorT
 				break;
 			case 7:
 				return make_unique<MLFieldTrackingFileWriter>(DetectorThickness, ModelPath);
-				break;
-			case 8:
-				return make_unique<HighZSearchFileWriter>(DetectorThickness, ModelPath);
 				break;
 			default:
 				cout<<FileType<<" is an unknown ML data type(6:_sp.txt)"<<endl;

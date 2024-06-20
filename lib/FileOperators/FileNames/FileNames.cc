@@ -20,8 +20,7 @@ void ShowDataFileTypes()
 	fprintf (stdout, "5   : _sp.txt \n");
 	fprintf (stdout, "6   : _sat.txt \n");
 	fprintf (stdout, "7   : _tracking.txt\n");
-	fprintf (stdout, "8   : _zsearch.txt\n");
-	fprintf (stdout, "9   : .root, root file type created by Benny(MoEDAL,Simulation, etc.)',\n");
+	fprintf (stdout, "8   : .root, root file type created by Benny(MoEDAL,Simulation, etc.)',\n");
 	fprintf (stdout, "\n\n");
 	exit (1);
 }
@@ -50,13 +49,9 @@ int GetFileType(const string& ipFileName)
 				else if(ipFileName.size()>9){
 					if(ipFileName.substr(ipFileName.size()-9)=="_feat.txt")
 						FileType=4;
-					else if(ipFileName.size()>12){
-						if(ipFileName.substr(ipFileName.size()-12)=="_zsearch.txt")
-							FileType=8;
-						else if(ipFileName.size()>13){
-							if(ipFileName.substr(ipFileName.size()-13)=="_tracking.txt")
-								FileType=7;
-						}
+					else if(ipFileName.size()>13){
+						if(ipFileName.substr(ipFileName.size()-13)=="_tracking.txt")
+							FileType=7;
 					}
 				}
 			}
@@ -87,13 +82,9 @@ string RemoveExtension(const string& FileName)
 				else if(FileName.size()>9){
 					if(FileName.substr(FileName.size()-9)=="_feat.txt")
 						return FileName.substr(0,FileName.size()-9);
-					else if(FileName.size()>12){
-						if(FileName.substr(FileName.size()-12)=="_zsearch.txt")
-							return FileName.substr(0,FileName.size()-12);
-						else if(FileName.size()>13){
-							if(FileName.substr(FileName.size()-13)=="_tracking.txt")
-								return FileName.substr(0,FileName.size()-13);
-						}
+					else if(FileName.size()>13){
+						if(FileName.substr(FileName.size()-13)=="_tracking.txt")
+							return FileName.substr(0,FileName.size()-13);
 					}
 				}
 			}
@@ -126,7 +117,7 @@ bool CheckFileType(const string& FileName, int FileType)
 	|| 
 	(FileType==2) & (GetFileType(FileName)==0) //Deals case where SATRAM filetype is specified as it has the same ending a ROOT file types (.root)
 	|| 
-	((FileType==9) & (GetFileType(FileName)==0)) //Deals case where Benny filetype is specified as it has the same ending a ROOT file types (.root)
+	((FileType==8) & (GetFileType(FileName)==0)) //Deals case where Benny filetype is specified as it has the same ending a ROOT file types (.root)
 	);
 }
 

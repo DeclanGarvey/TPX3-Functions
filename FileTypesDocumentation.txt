@@ -1,0 +1,135 @@
+
+NOTE: all Particle Files are space seperated format 
+=============================================================================================================================================================================================
+									**** Full Particle File types ****
+These are particle files which contain all information about each pixel in each cluster
+=============================================================================================================================================================================================
+_px.txt:
+	This is the standard data where each entry represnts a pixel entries
+
+	PixelXPosition[pixels] PixelPositionY[pixels] PixelToA[ns] PixelEnergy[keV]
+
+	The start of a new particle cluster is then indicated by "#" 
+
+
+
+_sim.txt:
+	This is the data type that is very similar to _px.txt file types where each entry represnts a pixel entries
+
+	PixelXPosition[pixels] PixelPositionY[pixels] PixelToA[ns] PixelEnergy[keV]
+
+	The big difference is the start of a new particle cluster is indicated by "ParticleType=%d,Size=%d,Energy=%lf,Theta=%lf,Phi=%lf\n"
+	This provides you information about the proceeding cluster
+	It is call _sim file as this is the typical information you recieve from a simulation
+
+
+".root" SATRAM file type:
+	These are root files that are used when saving SATRAM cluster information 
+
+
+".root" Benny file type:
+	These are root files that are used by Benny when saving files such as seen in the MoEDAL 2018 data
+
+=============================================================================================================================================================================================
+									**** Single entry Particle File types ****
+These are particle file types where each entry represents a single particle cluster
+=============================================================================================================================================================================================
+
+_feat.txt:
+	These are file types used when calculating features for training of particle tracking models or analysis some basic cluster characteristics of a data set
+
+	Each particle entry  consists of the following columns space seperated:
+		RegionID: This is the region the data was obtained from, typically only relevent SATRAM data
+			(where 3: Inside the SAA, -1: Cloud around the SAA, 2: Northern Horn, 1: Southern Horn, 0: outside all regions)
+			This can be used for other experiments but is not and is set to -1 for all particles in the file
+		PrimaryEnergy: This is the known primary energy of the cluster typically known for simulation data but for experimental data set to -1
+		Theta: This is the real theta incidence angle of the cluster typically known for simulation data but for experimental data set to -1
+		Phi: This is the real phi incidence angle of the cluster typically known for simulation data but for experimental data set to -1
+		MinToA: Minimum ToA value recorded in the cluster
+		Size: This is the number of pixels within the cluster
+		Energy: This is the total energy deposition of the cluster
+		MorphologicalClass: This is the morphological class
+			(0:dot, 1:small blob, 2: heavy blob, 3: heavy track, 4: straight track, 5: curly track, 6: LIPs at low theta angle, 7:MeIPs at low theta angle)
+		LLMTheta: The predicted Theta incidence angle using the improved LLM algorithm
+		WMaxDimStd: The energy weighted standard deviation of position parallel to the line of best fit
+		WMinDimBoxstd:  The energy weighted standard deviation of position perpendicular to the line of best fit
+		MinDimBox: The you were to draw the smallest possible area box around the cluster it is the minimum of dimension of said box
+		MaxDimBox: The you were to draw the smallest possible area box around the cluster it is the maximum of dimension of said box
+		PrimarySize:
+		dimx: The distance parallel to the x-direction from the left-most and right-most pixels in the cluster
+		dimy: The distance parallel to they-direction from the top-most and bottom-most pixels in the cluster                      
+		LineFitPhi: The predicted phi incidence angle using the energy-weight line fit method 
+	       	WeightedPhi: The predicted phi incidence angle using the ToA weighted averaging method
+	       	stdE: The standard deviation of recorded energy deposition of the pixels within the cluster
+This information is provided in a space seperated csv format with each entry representing a single cluster
+
+
+_sp.txt:
+	These are the only file types that can be used as input for the decovolution algorithms (ResponseConstuctor.cc, Deconvolutor.cc)
+	
+	Each particle entry  consists of the following columns space seperated:
+		RegionID: This is the region the data was obtained from, typically only relevent SATRAM data
+				(where 3: Inside the SAA, -1: Cloud around the SAA, 2: Northern Horn, 1: Southern Horn, 0: outside all regions)
+				This can be used for other experiments but is not and is set to -1 for all particles in the file
+		ParticleType: This is the known particle type(p,e-,pi+,...) indicated by integer of the cluster typically known for simulation data but for experimental data set to -1
+		PrimaryEnergy: This is the known primary energy of the cluster typically known for simulation data but for experimental data set to -1
+		MinToA: Minimum ToA value recorded in the cluster
+		AcquisitionTime: This is the acquisition time of the frame the particle is taken from which is typically only relevant TPX1 and TPX2 if taken from data without a frame time
+				 such as in data driven mode this value is set to 0
+		Size: This is the number of pixels within the cluster
+		Energy: This is the total energy deposition of the cluster
+		Height: This the maximum energy deposition in a singple pixel within the cluster
+		theta: This is the predicted theta incidence angle using the improved LLM algorithm
+		phi: The predicted phi incidence angle using the ToA weighted averaging method
+		sp: This is the predicted stopping power using the theta value from the LLM algorithm and assuming the cluster pass completely through the detector
+
+_tracking.txt:
+	These are the file types typically used to output final information about the particles within the field, these are the file types through throughout the MoEDAL analysis
+
+	Each particle entry  consists of the following columns space seperated:
+		MinToA: Minimum ToA value recorded in the cluster
+		PrimaryEnergy: This is the known primary energy of the cluster typically known for simulation data but for experimental data set to -1
+		MorphologicalClass: This is the morphological class of the class 
+					(0:dot, 1:small blob, 2: heavy blob, 3: heavy track, 4: straight track, 5: curly track, 6: LIPs at low theta angle, 7:MeIPs at low theta angle)
+		Size: This is the number of pixels within the cluster
+		Height: This the maximum energy deposition in a singple pixel within the cluster
+		theta: This is the predicted theta incidence angle using the improved LLM algorithm
+		phi: The predicted phi incidence angle using the ToA weighted averaging method
+		LLMTheta: The predicted Theta incidence angle using the improved LLM algorithm
+		XCentroid: This the energy-weighted mean position in the x coordinates
+		YCentroid: This the energy-weighted mean position in the y coordinates
+ 
+=============================================================================================================================================================================================
+									**** ML File types ****
+These are a variation of the typical file type 
+=============================================================================================================================================================================================
+These are variations of the typical file writers where theta caculation method is replaced by machine learning model
+
+
+NOTE: At the moment this ML variation is only implement for _sp.txt file types and _tracking.txt file types 
+
+
+=============================================================================================================================================================================================
+									**** MiscellaneousFile types ****
+=============================================================================================================================================================================================
+
+_sat.txt:
+	These file types are only relevent for SATRAM data in this file type each represents a new full acqusition frame 
+	
+	Each acquistion frame consists of the following columns space seperated:
+		RegionID: This is the region the data was obtained from
+				where 3: Inside the SAA, -1: Cloud around the SAA, 2: Northern Horn, 1: Southern Horn, 0: outside all regions
+		CurrentFrameTime: This is the ToA value of the frame
+		Occupation: This is the number of pixels that are activated within the frame
+		EnergyDeposition: This the total energy deposition recorded in the frame
+		AcquisitionTime: This is the total acquisition used to obtain the frame 
+		ClusterCounts: This the total number of clusters recorded within the frame (NOTE: overlapped clusters are recorded as a single cluster)
+		SatPosX: This is the lattitude position of the satellite at the time of frame acquisition
+		SatPosY: This is the longitude position of the satellite at the time of frame acquistion
+		SatAltitude: This is the altiude of the satellite at the time of frame acquistion
+		
+		
+
+
+
+

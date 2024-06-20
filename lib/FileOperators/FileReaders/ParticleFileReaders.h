@@ -50,15 +50,6 @@ class PxFileReader : public ParticleFileReader
 		bool AssignParticle(particle &p) override;
 };
 
-class AngFileReader : public ParticleFileReader
-{
-	public:
-		AngFileReader() {}
-		AngFileReader(const std::string& ipFileName){ UpdateFileInput(ipFileName); }
-		void UpdateFileInput(const std::string& ipFileName) override;
-		bool AssignParticle(particle &p) override;
-};
-
 class SimFileReader : public ParticleFileReader
 {
 	public:

@@ -66,7 +66,7 @@ function<bool(particle& p)> GetFilter(const string& FilterName, const string& Fi
 		if((FilterValue=="True") | (FilterValue=="1"))
 			return CreateLIPsFilter(false);
 	}
-	else if(FilterName=="RemoveMIPs")
+	else if(FilterName=="RemoveMeIPs")
 	{
 		if((FilterValue=="True") | (FilterValue=="1"))
 			return CreateLIPsFilter(true);

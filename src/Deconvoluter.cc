@@ -88,6 +88,8 @@ int main (int argc, const char *argv[])
 	}
 	if(ResponseFileName.empty())
 		ResponseFileName = "Response.root";
+	if(opFileName.empty())
+		opFileName = "results";
 	/* Process the individual files */
 	if (optind >= argc)
 	{
